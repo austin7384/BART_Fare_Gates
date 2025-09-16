@@ -1,0 +1,1007 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/austincoffelt/Documents/bart_fare_gates_project/results/analysis_log_16 Sep 2025.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}16 Sep 2025, 01:16:19
+{txt}
+{com}. 
+. 
+. **# 2. Load Data
+. ******************
+. use "$data/bart_ridership_2023_2025_with_treatment.dta"
+{txt}(Appended BART Ridership Data 2023-2025)
+
+{com}. 
+. 
+. **# 3. Tables and Graphs
+. *************************
+. 
+. // 1.) Table of Descriptive Stats
+. preserve
+{txt}
+{com}. // a.) Full dataset
+. sum riders
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 6}riders {c |}{res}  2,362,500     56.4697    102.9827          0       2942
+{txt}
+{com}. eststo full: estpost summarize riders
+
+{txt}{space 0}{space 0}{ralign 12:}{space 1}{c |}{space 1}{ralign 9:e(count)}{space 1}{space 1}{ralign 9:e(sum_w)}{space 1}{space 1}{ralign 9:e(mean)}{space 1}{space 1}{ralign 9:e(Var)}{space 1}{space 1}{ralign 9:e(sd)}{space 1}{space 1}{ralign 9:e(min)}{space 1}{space 1}{ralign 9:e(max)}{space 1}{space 1}{ralign 9:e(sum)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:riders}{space 1}{c |}{space 1}{ralign 9:{res:{sf:  2362500}}}{space 1}{space 1}{ralign 9:{res:{sf:  2362500}}}{space 1}{space 1}{ralign 9:{res:{sf:  56.4697}}}{space 1}{space 1}{ralign 9:{res:{sf: 10605.44}}}{space 1}{space 1}{ralign 9:{res:{sf: 102.9827}}}{space 1}{space 1}{ralign 9:{res:{sf:        0}}}{space 1}{space 1}{ralign 9:{res:{sf:     2942}}}{space 1}{space 1}{ralign 9:{res:{sf: 1.33e+08}}}{space 1}
+
+{com}. 
+. // b.) Just observations where either origin_parking or destination_parking == 0
+. keep if origin_parking == 0 | destination_parking == 0
+{txt}(1,293,705 observations deleted)
+
+{com}. eststo no_parking: estpost summarize riders
+
+{txt}{space 0}{space 0}{ralign 12:}{space 1}{c |}{space 1}{ralign 9:e(count)}{space 1}{space 1}{ralign 9:e(sum_w)}{space 1}{space 1}{ralign 9:e(mean)}{space 1}{space 1}{ralign 9:e(Var)}{space 1}{space 1}{ralign 9:e(sd)}{space 1}{space 1}{ralign 9:e(min)}{space 1}{space 1}{ralign 9:e(max)}{space 1}{space 1}{ralign 9:e(sum)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:riders}{space 1}{c |}{space 1}{ralign 9:{res:{sf:  1068795}}}{space 1}{space 1}{ralign 9:{res:{sf:  1068795}}}{space 1}{space 1}{ralign 9:{res:{sf: 104.2318}}}{space 1}{space 1}{ralign 9:{res:{sf: 18538.44}}}{space 1}{space 1}{ralign 9:{res:{sf: 136.1559}}}{space 1}{space 1}{ralign 9:{res:{sf:        0}}}{space 1}{space 1}{ralign 9:{res:{sf:     2942}}}{space 1}{space 1}{ralign 9:{res:{sf: 1.11e+08}}}{space 1}
+
+{com}. 
+. // Reload data for next subset
+. restore
+{txt}
+{com}. preserve
+{txt}
+{com}. 
+. // c.) Observations where stops <=5 (short trips)
+. keep if stops <= 5 & stops != 999
+{txt}(1,809,675 observations deleted)
+
+{com}. eststo short_trips: estpost summarize riders
+
+{txt}{space 0}{space 0}{ralign 12:}{space 1}{c |}{space 1}{ralign 9:e(count)}{space 1}{space 1}{ralign 9:e(sum_w)}{space 1}{space 1}{ralign 9:e(mean)}{space 1}{space 1}{ralign 9:e(Var)}{space 1}{space 1}{ralign 9:e(sd)}{space 1}{space 1}{ralign 9:e(min)}{space 1}{space 1}{ralign 9:e(max)}{space 1}{space 1}{ralign 9:e(sum)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:riders}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   552825}}}{space 1}{space 1}{ralign 9:{res:{sf:   552825}}}{space 1}{space 1}{ralign 9:{res:{sf: 97.02741}}}{space 1}{space 1}{ralign 9:{res:{sf: 19478.08}}}{space 1}{space 1}{ralign 9:{res:{sf: 139.5639}}}{space 1}{space 1}{ralign 9:{res:{sf:        0}}}{space 1}{space 1}{ralign 9:{res:{sf:     1899}}}{space 1}{space 1}{ralign 9:{res:{sf: 5.36e+07}}}{space 1}
+
+{com}. 
+. // d.) Observations where stops >=5 and <=10 (medium trips)
+. restore
+{txt}
+{com}. preserve
+{txt}
+{com}. keep if stops >= 5 & stops <= 10 & stops != 999
+{txt}(1,620,675 observations deleted)
+
+{com}. eststo medium_trips: estpost summarize riders
+
+{txt}{space 0}{space 0}{ralign 12:}{space 1}{c |}{space 1}{ralign 9:e(count)}{space 1}{space 1}{ralign 9:e(sum_w)}{space 1}{space 1}{ralign 9:e(mean)}{space 1}{space 1}{ralign 9:e(Var)}{space 1}{space 1}{ralign 9:e(sd)}{space 1}{space 1}{ralign 9:e(min)}{space 1}{space 1}{ralign 9:e(max)}{space 1}{space 1}{ralign 9:e(sum)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:riders}{space 1}{c |}{space 1}{ralign 9:{res:{sf:   741825}}}{space 1}{space 1}{ralign 9:{res:{sf:   741825}}}{space 1}{space 1}{ralign 9:{res:{sf: 86.66789}}}{space 1}{space 1}{ralign 9:{res:{sf: 16629.66}}}{space 1}{space 1}{ralign 9:{res:{sf:  128.956}}}{space 1}{space 1}{ralign 9:{res:{sf:        0}}}{space 1}{space 1}{ralign 9:{res:{sf:     2942}}}{space 1}{space 1}{ralign 9:{res:{sf: 6.43e+07}}}{space 1}
+
+{com}. 
+. // e.) Observations where stops >10 (long trips)
+. restore
+{txt}
+{com}. preserve
+{txt}
+{com}. keep if stops > 10 & stops != 999
+{txt}(1,181,250 observations deleted)
+
+{com}. eststo long_trips: estpost summarize riders
+
+{txt}{space 0}{space 0}{ralign 12:}{space 1}{c |}{space 1}{ralign 9:e(count)}{space 1}{space 1}{ralign 9:e(sum_w)}{space 1}{space 1}{ralign 9:e(mean)}{space 1}{space 1}{ralign 9:e(Var)}{space 1}{space 1}{ralign 9:e(sd)}{space 1}{space 1}{ralign 9:e(min)}{space 1}{space 1}{ralign 9:e(max)}{space 1}{space 1}{ralign 9:e(sum)}{space 1}
+{space 0}{hline 13}{c   +}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}{hline 11}
+{space 0}{space 0}{ralign 12:riders}{space 1}{c |}{space 1}{ralign 9:{res:{sf:  1181250}}}{space 1}{space 1}{ralign 9:{res:{sf:  1181250}}}{space 1}{space 1}{ralign 9:{res:{sf: 23.68042}}}{space 1}{space 1}{ralign 9:{res:{sf: 2001.666}}}{space 1}{space 1}{ralign 9:{res:{sf: 44.73999}}}{space 1}{space 1}{ralign 9:{res:{sf:        0}}}{space 1}{space 1}{ralign 9:{res:{sf:      966}}}{space 1}{space 1}{ralign 9:{res:{sf: 2.80e+07}}}{space 1}
+
+{com}. 
+. // Create table
+. esttab full no_parking short_trips medium_trips long_trips using "$results/descriptive_stats.rtf", ///
+>     cells("mean(fmt(%9.2f)) sd(fmt(%9.2f)) min(fmt(%9.0f)) max(fmt(%9.0f)) count(fmt(%9.0f))") ///
+>     title("Descriptive Statistics of Ridership by Route Type") ///
+>     replace label
+{res}{txt}(output written to {browse  `"/Users/austincoffelt/Documents/bart_fare_gates_project/results/descriptive_stats.rtf"'})
+
+{com}. 
+. restore
+{txt}
+{com}. 
+. // 2.) Histogram of ridership for the full dataset
+. histogram riders, ///
+>     title("Distribution of Ridership - Full Dataset") ///
+>     xtitle("Daily Ridership") ///
+>     ytitle("Frequency") ///
+>     graphregion(color(white)) ///
+>     saving("$results/hist_ridership_full.gph", replace)
+{txt}(bin={res}63{txt}, start={res}0{txt}, width={res}46.698413{txt})
+{res}{txt}file {bf:/Users/austincoffelt/Documents/bart_fare_gates_project/results/hist_ridership_full.gph} saved
+
+{com}. graph export "$results/hist_ridership_full.png", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/hist_ridership_full.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. 
+. // 3.) Histogram of stops between stations (removing stops == 999)
+. preserve
+{txt}
+{com}. drop if stops == 999
+{txt}(0 observations deleted)
+
+{com}. histogram stops, ///
+>     title("Distribution of Stops Between Stations") ///
+>     xtitle("Number of Stops") ///
+>     ytitle("Frequency") ///
+>     graphregion(color(white)) ///
+>     saving("$results/hist_stops.gph", replace)
+{txt}(bin={res}63{txt}, start={res}0{txt}, width={res}.42857143{txt})
+{res}{txt}file {bf:/Users/austincoffelt/Documents/bart_fare_gates_project/results/hist_stops.gph} saved
+
+{com}. graph export "$results/hist_stops.png", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/hist_stops.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. // 4.) Table of the 10 most taken routes by average daily ridership
+. preserve
+{txt}
+{com}. // Create a combined route identifier that shows actual station names
+. gen route_label = origin + " to " + destination
+{txt}
+{com}. 
+. collapse (mean) avg_ridership=riders (firstnm) stops transfer_needed origin_parking destination_parking, by(origin destination route_label)
+{res}{txt}
+{com}. 
+. // Sort by average ridership descending for top 10
+. gsort -avg_ridership
+{txt}
+{com}. 
+. // Display and export top 10 routes
+. list route_label avg_ridership stops transfer_needed origin_parking destination_parking in 1/10, clean noobs
+{txt}
+    {res} route_label   avg_ri~p   stops   transf~d   origin~g   destin~g {txt} 
+    {res}POWL to BALB    757.292       5          0          0          0 {txt} 
+    {res}WOAK to EMBR    742.997       1          0          1          0 {txt} 
+    {res}POWL to 24TH    684.822       3          0          0          0 {txt} 
+    {res}BALB to POWL    681.639       5          0          0          0 {txt} 
+    {res}SFIA to POWL    651.146      10          0          0          0 {txt} 
+    {res}EMBR to WOAK    633.529       1          0          0          1 {txt} 
+    {res}DUBL to EMBR    606.163       9          0          1          0 {txt} 
+    {res}POWL to DALY    592.558       6          0          0          1 {txt} 
+    {res}24TH to MONT    590.176       4          0          0          0 {txt} 
+    {res}24TH to POWL    588.508       3          0          0          0 {txt} 
+
+{com}. export excel route_label avg_ridership stops transfer_needed origin_parking destination_parking in 1/10 using "$results/top10_routes.xlsx", firstrow(variables) replace
+{res}{txt}file {bf:/Users/austincoffelt/Documents/bart_fare_gates_project/results/top10_routes.xlsx} saved
+
+{com}. 
+. // 5.) Table of the 10 least taken routes by average daily ridership
+. // Sort by average ridership ascending for bottom 10
+. gsort avg_ridership
+{txt}
+{com}. 
+. // Display and export bottom 10 routes
+. list route_label avg_ridership stops transfer_needed origin_parking destination_parking in 1/10, clean noobs
+{txt}
+    {res} route_label   avg_ri~p   stops   transf~d   origin~g   destin~g {txt} 
+    {res}WDUB to NCON    .155556      16          1          1          1 {txt} 
+    {res}WDUB to LAFY    .267725      12          1          1          1 {txt} 
+    {res}NCON to WDUB    .283598      16          1          1          1 {txt} 
+    {res}BERY to MLBR    .325926      26          1          1          1 {txt} 
+    {res}CAST to NCON    .326984      15          1          1          1 {txt} 
+    {res}CAST to PCTR    .333333      17          1          1          1 {txt} 
+    {res}LAFY to WDUB     .33545      12          1          1          1 {txt} 
+    {res}PCTR to CAST    .338624      17          1          1          1 {txt} 
+    {res}NCON to CAST    .348148      15          1          1          1 {txt} 
+    {res}WDUB to ORIN    .382011      11          1          1          1 {txt} 
+
+{com}. export excel route_label avg_ridership stops transfer_needed origin_parking destination_parking in 1/10 using "$results/bottom10_routes.xlsx", firstrow(variables) replace
+{res}{txt}file {bf:/Users/austincoffelt/Documents/bart_fare_gates_project/results/bottom10_routes.xlsx} saved
+
+{com}. 
+. restore
+{txt}
+{com}. 
+. // 6.) Graph of weekly ridership for the whole system comparing 2023 to 2024
+. preserve
+{txt}
+{com}. gen year = year(date)
+{txt}
+{com}. gen week_of_year = week(date)
+{txt}
+{com}. 
+. collapse (sum) weekly_ridership=riders, by(week_of_year year)
+{res}{txt}
+{com}. 
+. // Reshape to wide format to have 2023 and 2024 as separate variables
+. reshape wide weekly_ridership, i(week_of_year) j(year)
+{res}{txt}(j = 2023 2024 2025)
+
+Data{col 36}Long{col 43}->{col 48}Wide
+{hline 77}
+Number of observations     {res}         135   {txt}->   {res}52          
+{txt}Number of variables        {res}           3   {txt}->   {res}4           
+{txt}j variable (3 values)              {res}year   {txt}->   (dropped)
+xij variables:
+                       {res}weekly_ridership   {txt}->   {res}weekly_ridership2023 weekly_ridership2024 weekly_ridership2025
+{txt}{hline 77}
+
+{com}. 
+. twoway (line weekly_ridership2023 week_of_year, lcolor(blue)) ///
+>        (line weekly_ridership2024 week_of_year, lcolor(red)), ///
+>     title("Weekly Ridership: 2023 vs 2024") ///
+>     xtitle("Week of Year (1-52)") ///
+>     ytitle("Weekly Ridership") ///
+>     legend(order(1 "2023" 2 "2024")) ///
+>     xlabel(1(4)52, labsize(small)) ///
+>     graphregion(color(white)) ///
+>     saving("$results/weekly_ridership_2023_2024.gph", replace)
+{res}{txt}file {bf:/Users/austincoffelt/Documents/bart_fare_gates_project/results/weekly_ridership_2023_2024.gph} saved
+
+{com}. graph export "$results/weekly_ridership_2023_2024.png", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/weekly_ridership_2023_2024.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. // 7.) Graph of average daily riders for treatment groups around treatment time
+. // (Indexed to remove day-of-week effects)
+. preserve
+{txt}
+{com}. 
+. // Calculate average ridership by day of week for the pre-treatment period
+. gen pre_treatment = (time_to_treatment < -7) // Use data more than 7 days before treatment
+{txt}
+{com}. bysort dow: egen dow_mean = mean(riders) if pre_treatment == 1
+{txt}(554,829 missing values generated)
+
+{com}. bysort dow: egen overall_dow_mean = mean(dow_mean) // Get the average for each day of week
+{txt}
+{com}. 
+. // Create indexed ridership (ridership divided by day-of-week average)
+. gen indexed_riders = riders / overall_dow_mean
+{txt}
+{com}. 
+. // Create treatment groups based on actual treatment dates
+. gen treatment_group = .
+{txt}(2,362,500 missing values generated)
+
+{com}. replace treatment_group = 1 if earliest_completion_route <= td(30nov2024) // Early treated (before Dec 2024)
+{txt}(925,155 real changes made)
+
+{com}. replace treatment_group = 2 if earliest_completion_route > td(30nov2024) & earliest_completion_route <= td(31mar2025) // Middle treated (Dec 2024 - Mar 2025)
+{txt}(846,720 real changes made)
+
+{com}. replace treatment_group = 3 if earliest_completion_route > td(31mar2025) & !missing(earliest_completion_route) // Late treated (After Apr 2025)
+{txt}(590,625 real changes made)
+
+{com}. replace treatment_group = 4 if missing(earliest_completion_route) // Never treated (pure control)
+{txt}(0 real changes made)
+
+{com}. 
+. // Label the values for better interpretation
+. label define treatment_groups 1 "Early Treated (Pre-Dec 2024)" 2 "Middle Treated (Dec 2024-Mar 2025)" 3 "Late Treated (Post-Apr 2025)" 4 "Never Treated"
+{txt}
+{com}. label values treatment_group treatment_groups
+{txt}
+{com}. 
+. // Check the distribution
+. tab treatment_group, mi
+
+                   {txt}treatment_group {c |}      Freq.     Percent        Cum.
+{hline 35}{c +}{hline 35}
+      Early Treated (Pre-Dec 2024) {c |}{res}    925,155       39.16       39.16
+{txt}Middle Treated (Dec 2024-Mar 2025) {c |}{res}    846,720       35.84       75.00
+{txt}      Late Treated (Post-Apr 2025) {c |}{res}    590,625       25.00      100.00
+{txt}{hline 35}{c +}{hline 35}
+                             Total {c |}{res}  2,362,500      100.00
+{txt}
+{com}. 
+. // Use the new treatment groups based on completion date
+. keep if time_to_treatment >= -25 & time_to_treatment <= 25 & !missing(treatment_group)
+{txt}(2,237,114 observations deleted)
+
+{com}. 
+. // Collapse the indexed ridership
+. collapse (mean) avg_indexed_riders=indexed_riders, by(time_to_treatment treatment_group)
+{res}{txt}
+{com}. 
+. // Create the graph with indexed ridership
+. twoway (line avg_indexed_riders time_to_treatment if treatment_group == 1, lcolor(blue)) ///
+>        (line avg_indexed_riders time_to_treatment if treatment_group == 2, lcolor(red)) ///
+>        (line avg_indexed_riders time_to_treatment if treatment_group == 3, lcolor(green)) ///
+>        (line avg_indexed_riders time_to_treatment if treatment_group == 4, lcolor(orange)), ///
+>     title("Average Daily Ridership Around Treatment Time (Indexed)") ///
+>     xtitle("Days Relative to Treatment") ///
+>     ytitle("Indexed Ridership (Relative to Day-of-Week Average)") ///
+>     legend(order(1 "Early Treated (Pre-Dec 2024)" 2 "Middle Treated (Dec-Mar 2025)" 3 "Late Treated (Post-Apr 2025)" 4 "Never Treated")) ///
+>     xline(0, lpattern(dash)) ///
+>     yline(1, lpattern(dash) lcolor(gs10)) /// Reference line at 1 (average)
+>     graphregion(color(white)) ///
+>     saving("$results/treatment_timing_indexed.gph", replace)
+{res}{txt}file {bf:/Users/austincoffelt/Documents/bart_fare_gates_project/results/treatment_timing_indexed.gph} saved
+
+{com}. graph export "$results/treatment_timing_indexed.png", replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/treatment_timing_indexed.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. 
+. restore
+{txt}
+{com}. 
+. // 8. Parallel Trends Assessment with Random Routes (2023 Data)
+. 
+. // First, make sure the results directory exists
+. capture confirm file "$results"
+{txt}
+{com}. if _rc != 0 {c -(}
+.     // If $results doesn't exist, create it
+.     capture mkdir "$results"
+.     if _rc != 0 {c -(}
+.         // If still fails, use current directory
+.         global results "."
+.     {c )-}
+. {c )-}
+{txt}
+{com}. 
+. // Set seed for reproducibility
+. set seed 12345
+{txt}
+{com}. 
+. // Create proper week variable
+. gen week_num = week(date)
+{txt}
+{com}. gen year = year(date)
+{txt}
+{com}. 
+. // 8a.) Weekly ridership for 5 random routes
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. 
+. // Get random sample of routes
+. bysort route: keep if _n == 1
+{txt}(909,999 observations deleted)
+
+{com}. sample 5, count
+{txt}(2,496 observations deleted)
+
+{com}. keep route
+{txt}
+{com}. tempfile random_routes
+{txt}
+{com}. save `random_routes'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.00000a{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. // Weekly ridership overlay - FIXED
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. merge m:1 route using `random_routes'
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}         910,690
+{txt}{col 9}from master{col 30}{res}         910,690{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}           1,810{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(910,690 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. collapse (mean) weekly_ridership = riders, by(week_num route)
+{res}{txt}
+{com}. 
+. sort route week_num
+{txt}
+{com}. levelsof route, local(routes)
+{res}{txt}`"DUBL_to_MONT"' `"MCAR_to_ANTC"' `"MCAR_to_DUBL"' `"SBRN_to_LAKE"' `"SFIA_to_OAKL"'
+
+{com}. 
+. local i = 1
+{txt}
+{com}. local plot_cmd ""
+{txt}
+{com}. foreach route in `routes' {c -(}
+{txt}  2{com}.     local color: word `i' of "blue red green orange purple"
+{txt}  3{com}.     local plot_cmd `"`plot_cmd' (line weekly_ridership week_num if route == "`route'", lcolor(`color') lwidth(medthick))"'
+{txt}  4{com}.     local i = `i' + 1
+{txt}  5{com}. {c )-}
+{txt}
+{com}. 
+. sum week_num
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}week_num {c |}{res}        260        26.5    15.03728          1         52
+{txt}
+{com}. local min_week = r(min)
+{txt}
+{com}. local max_week = r(max)
+{txt}
+{com}. 
+. twoway `plot_cmd', ///
+>     title("Weekly Ridership: 5 Random Routes (2023)") ///
+>     subtitle("Overlay Comparison") ///
+>     xtitle("Week of Year") ///
+>     ytitle("Average Weekly Ridership") ///
+>     xlabel(`min_week'(5)`max_week', grid) ///
+>     ylabel(, grid) ///
+>     legend(order(1 "Route 1" 2 "Route 2" 3 "Route 3" 4 "Route 4" 5 "Route 5") pos(6) rows(1)) ///
+>     graphregion(color(white)) plotregion(margin(medium))
+{res}{txt}
+{com}. graph export "$results/weekly_ridership_overlay.png", width(2000) replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/weekly_ridership_overlay.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. // Weekly log ridership overlay
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. merge m:1 route using `random_routes'
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}         910,690
+{txt}{col 9}from master{col 30}{res}         910,690{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}           1,810{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(910,690 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. collapse (mean) weekly_log_ridership = log_riders, by(week_num route)
+{res}{txt}
+{com}. 
+. sort route week_num
+{txt}
+{com}. levelsof route, local(routes)
+{res}{txt}`"DUBL_to_MONT"' `"MCAR_to_ANTC"' `"MCAR_to_DUBL"' `"SBRN_to_LAKE"' `"SFIA_to_OAKL"'
+
+{com}. 
+. local i = 1
+{txt}
+{com}. local plot_cmd ""
+{txt}
+{com}. foreach route in `routes' {c -(}
+{txt}  2{com}.     local color: word `i' of "blue red green orange purple"
+{txt}  3{com}.     local plot_cmd `"`plot_cmd' (line weekly_log_ridership week_num if route == "`route'", lcolor(`color') lwidth(medthick))"'
+{txt}  4{com}.     local i = `i' + 1
+{txt}  5{com}. {c )-}
+{txt}
+{com}. 
+. sum week_num
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}week_num {c |}{res}        260        26.5    15.03728          1         52
+{txt}
+{com}. local min_week = r(min)
+{txt}
+{com}. local max_week = r(max)
+{txt}
+{com}. 
+. twoway `plot_cmd', ///
+>     title("Log Weekly Ridership: 5 Random Routes (2023)") ///
+>     subtitle("Overlay Comparison") ///
+>     xtitle("Week of Year") ///
+>     ytitle("Log(Weekly Ridership)") ///
+>     xlabel(`min_week'(5)`max_week', grid) ///
+>     ylabel(, grid) ///
+>     legend(order(1 "Route 1" 2 "Route 2" 3 "Route 3" 4 "Route 4" 5 "Route 5") pos(6) rows(1)) ///
+>     graphregion(color(white)) plotregion(margin(medium))
+{res}{txt}
+{com}. graph export "$results/weekly_log_ridership_overlay.png", width(2000) replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/weekly_log_ridership_overlay.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. // 8b.) Weekly plots for no parking routes
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. keep if origin_parking == 0 | destination_parking == 0
+{txt}(499,685 observations deleted)
+
+{com}. 
+. // Get random sample from no-parking routes
+. bysort route: keep if _n == 1
+{txt}(411,683 observations deleted)
+
+{com}. sample 5, count
+{txt}(1,127 observations deleted)
+
+{com}. keep route
+{txt}
+{com}. tempfile random_no_parking
+{txt}
+{com}. save `random_no_parking'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.00000e{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. keep if origin_parking == 0 | destination_parking == 0
+{txt}(499,685 observations deleted)
+
+{com}. merge m:1 route using `random_no_parking'
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}         410,997
+{txt}{col 9}from master{col 30}{res}         410,997{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}           1,818{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(410,997 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. collapse (mean) weekly_log_ridership = log_riders, by(week_num route)
+{res}{txt}
+{com}. 
+. sort route week_num
+{txt}
+{com}. levelsof route, local(routes)
+{res}{txt}`"19TH_to_RICH"' `"24TH_to_GLEN"' `"DBRK_to_CAST"' `"DUBL_to_BALB"' `"UCTY_to_BALB"'
+
+{com}. 
+. local i = 1
+{txt}
+{com}. local plot_cmd ""
+{txt}
+{com}. foreach route in `routes' {c -(}
+{txt}  2{com}.     local color: word `i' of "blue red green orange purple"
+{txt}  3{com}.     local plot_cmd `"`plot_cmd' (line weekly_log_ridership week_num if route == "`route'", lcolor(`color') lwidth(medthick))"'
+{txt}  4{com}.     local i = `i' + 1
+{txt}  5{com}. {c )-}
+{txt}
+{com}. 
+. sum week_num
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}week_num {c |}{res}        260        26.5    15.03728          1         52
+{txt}
+{com}. local min_week = r(min)
+{txt}
+{com}. local max_week = r(max)
+{txt}
+{com}. 
+. twoway `plot_cmd', ///
+>     title("Log Weekly Ridership: 5 Random No-Parking Routes (2023)") ///
+>     subtitle("Overlay Comparison") ///
+>     xtitle("Week of Year") ///
+>     ytitle("Log(Weekly Ridership)") ///
+>     xlabel(`min_week'(5)`max_week', grid) ///
+>     ylabel(, grid) ///
+>     legend(order(1 "Route 1" 2 "Route 2" 3 "Route 3" 4 "Route 4" 5 "Route 5") pos(6) rows(1)) ///
+>     graphregion(color(white)) plotregion(margin(medium))
+{res}{txt}
+{com}. graph export "$results/weekly_no_parking_overlay.png", width(2000) replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/weekly_no_parking_overlay.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. // 8c.) Weekly plots for short no parking routes
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. keep if (origin_parking == 0 | destination_parking == 0) & stops <= 5
+{txt}(819,425 observations deleted)
+
+{com}. 
+. // Get random sample from short no-parking routes
+. bysort route: keep if _n == 1
+{txt}(92,819 observations deleted)
+
+{com}. sample 5, count
+{txt}(251 observations deleted)
+
+{com}. keep route
+{txt}
+{com}. tempfile random_short_no_parking
+{txt}
+{com}. save `random_short_no_parking'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.00000h{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. keep if (origin_parking == 0 | destination_parking == 0) & stops <= 5
+{txt}(819,425 observations deleted)
+
+{com}. merge m:1 route using `random_short_no_parking'
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}          91,250
+{txt}{col 9}from master{col 30}{res}          91,250{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}           1,825{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(91,250 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. collapse (mean) weekly_log_ridership = log_riders, by(week_num route)
+{res}{txt}
+{com}. 
+. sort route week_num
+{txt}
+{com}. levelsof route, local(routes)
+{res}{txt}`"16TH_to_EMBR"' `"CIVC_to_POWL"' `"COLM_to_24TH"' `"POWL_to_LAKE"' `"SSAN_to_24TH"'
+
+{com}. 
+. local i = 1
+{txt}
+{com}. local plot_cmd ""
+{txt}
+{com}. foreach route in `routes' {c -(}
+{txt}  2{com}.     local color: word `i' of "blue red green orange purple"
+{txt}  3{com}.     local plot_cmd `"`plot_cmd' (line weekly_log_ridership week_num if route == "`route'", lcolor(`color') lwidth(medthick))"'
+{txt}  4{com}.     local i = `i' + 1
+{txt}  5{com}. {c )-}
+{txt}
+{com}. 
+. sum week_num
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 4}week_num {c |}{res}        260        26.5    15.03728          1         52
+{txt}
+{com}. local min_week = r(min)
+{txt}
+{com}. local max_week = r(max)
+{txt}
+{com}. 
+. twoway `plot_cmd', ///
+>     title("Log Weekly Ridership: 5 Random Short No-Parking Routes (2023)") ///
+>     subtitle("Overlay Comparison") ///
+>     xtitle("Week of Year") ///
+>     ytitle("Log(Weekly Ridership)") ///
+>     xlabel(`min_week'(5)`max_week', grid) ///
+>     ylabel(, grid) ///
+>     legend(order(1 "Route 1" 2 "Route 2" 3 "Route 3" 4 "Route 4" 5 "Route 5") pos(6) rows(1)) ///
+>     graphregion(color(white)) plotregion(margin(medium))
+{res}{txt}
+{com}. graph export "$results/weekly_short_no_parking_overlay.png", width(2000) replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/weekly_short_no_parking_overlay.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. // DAILY SNAPSHOTS (2 weeks)
+. // Get 2 random weeks for daily snapshots
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. set seed 67890
+{txt}
+{com}. gen temp_week = week(date)
+{txt}
+{com}. bysort temp_week: keep if _n == 1
+{txt}(912,448 observations deleted)
+
+{com}. sample 2, count
+{txt}(50 observations deleted)
+
+{com}. keep temp_week
+{txt}
+{com}. tempfile random_weeks
+{txt}
+{com}. save `random_weeks'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.00000k{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. // Daily ridership snapshot
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. merge m:1 route using `random_routes'
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}         910,690
+{txt}{col 9}from master{col 30}{res}         910,690{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}           1,810{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(910,690 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. // Merge with random weeks
+. gen temp_week = week(date)
+{txt}
+{com}. merge m:1 temp_week using `random_weeks'
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}           1,741
+{txt}{col 9}from master{col 30}{res}           1,741{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}              69{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(1,741 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. collapse (mean) daily_ridership = riders, by(date route)
+{res}{txt}
+{com}. format date %tdNN/DD
+{txt}
+{com}. 
+. sort route date
+{txt}
+{com}. levelsof route, local(routes)
+{res}{txt}`"DUBL_to_MONT"' `"MCAR_to_ANTC"' `"MCAR_to_DUBL"' `"SBRN_to_LAKE"' `"SFIA_to_OAKL"'
+
+{com}. 
+. local i = 1
+{txt}
+{com}. local plot_cmd ""
+{txt}
+{com}. foreach route in `routes' {c -(}
+{txt}  2{com}.     local color: word `i' of "blue red green orange purple"
+{txt}  3{com}.     local plot_cmd `"`plot_cmd' (line daily_ridership date if route == "`route'", lcolor(`color') lwidth(medthick))"'
+{txt}  4{com}.     local i = `i' + 1
+{txt}  5{com}. {c )-}
+{txt}
+{com}. 
+. twoway `plot_cmd', ///
+>     title("Daily Ridership: 5 Random Routes (2-Week Sample, 2023)") ///
+>     subtitle("Overlay Comparison") ///
+>     xtitle("Date") ///
+>     ytitle("Daily Ridership") ///
+>     xlabel(, angle(45) grid) ///
+>     ylabel(, grid) ///
+>     legend(order(1 "Route 1" 2 "Route 2" 3 "Route 3" 4 "Route 4" 5 "Route 5") pos(6) rows(1)) ///
+>     graphregion(color(white)) plotregion(margin(medium))
+{res}{txt}
+{com}. graph export "$results/daily_ridership_sample.png", width(2000) replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/daily_ridership_sample.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. // Daily log ridership snapshot
+. preserve
+{txt}
+{com}. keep if year == 2023
+{txt}(1,450,000 observations deleted)
+
+{com}. merge m:1 route using `random_routes'
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}         910,690
+{txt}{col 9}from master{col 30}{res}         910,690{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}           1,810{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(910,690 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. // Merge with random weeks
+. gen temp_week = week(date)
+{txt}
+{com}. merge m:1 temp_week using `random_weeks'
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}           1,741
+{txt}{col 9}from master{col 30}{res}           1,741{txt}  (_merge==1)
+{col 9}from using{col 30}{res}               0{txt}  (_merge==2)
+
+{col 5}Matched{col 30}{res}              69{txt}  (_merge==3)
+{col 5}{hline 41}
+
+{com}. keep if _merge == 3
+{txt}(1,741 observations deleted)
+
+{com}. drop _merge
+{txt}
+{com}. 
+. collapse (mean) daily_log_ridership = log_riders, by(date route)
+{res}{txt}
+{com}. format date %tdNN/DD
+{txt}
+{com}. 
+. sort route date
+{txt}
+{com}. levelsof route, local(routes)
+{res}{txt}`"DUBL_to_MONT"' `"MCAR_to_ANTC"' `"MCAR_to_DUBL"' `"SBRN_to_LAKE"' `"SFIA_to_OAKL"'
+
+{com}. 
+. local i = 1
+{txt}
+{com}. local plot_cmd ""
+{txt}
+{com}. foreach route in `routes' {c -(}
+{txt}  2{com}.     local color: word `i' of "blue red green orange purple"
+{txt}  3{com}.     local plot_cmd `"`plot_cmd' (line daily_log_ridership date if route == "`route'", lcolor(`color') lwidth(medthick))"'
+{txt}  4{com}.     local i = `i' + 1
+{txt}  5{com}. {c )-}
+{txt}
+{com}. 
+. twoway `plot_cmd', ///
+>     title("Log Daily Ridership: 5 Random Routes (2-Week Sample, 2023)") ///
+>     subtitle("Overlay Comparison") ///
+>     xtitle("Date") ///
+>     ytitle("Log(Daily Ridership)") ///
+>     xlabel(, angle(45) grid) ///
+>     ylabel(, grid) ///
+>     legend(order(1 "Route 1" 2 "Route 2" 3 "Route 3" 4 "Route 4" 5 "Route 5") pos(6) rows(1)) ///
+>     graphregion(color(white)) plotregion(margin(medium))
+{res}{txt}
+{com}. graph export "$results/daily_log_ridership_sample.png", width(2000) replace
+{txt}{p 0 4 2}
+file {bf}
+/Users/austincoffelt/Documents/bart_fare_gates_project/results/daily_log_ridership_sample.png{rm}
+saved as
+PNG
+format
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. display "All parallel trends graphs completed successfully!"
+{res}All parallel trends graphs completed successfully!
+{txt}
+{com}. display "Check the $results directory for output files."
+{res}Check the /Users/austincoffelt/Documents/bart_fare_gates_project/results directory for output files.
+{txt}
+{com}. 
+. 
+. **# 4. Export & Save
+. ************************************
+. 
+. // Display completion message
+. di "Analysis complete! All tables and graphs have been saved to the results folder."
+{res}Analysis complete! All tables and graphs have been saved to the results folder.
+{txt}
+{com}. 
+. // Close the log file
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}/Users/austincoffelt/Documents/bart_fare_gates_project/results/analysis_log_16 Sep 2025.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}16 Sep 2025, 01:16:40
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}

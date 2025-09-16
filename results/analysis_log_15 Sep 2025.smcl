@@ -1,0 +1,1187 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/austincoffelt/Documents/bart_fare_gates_project/results/analysis_log_15 Sep 2025.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}15 Sep 2025, 23:46:47
+{txt}
+{com}. 
+. 
+. **# 2. Load Data
+. ******************
+. cd "$data" 
+{res}/Users/austincoffelt/Documents/bart_fare_gates_project/data
+{txt}
+{com}. 
+. // 2023 Data
+. import delimited "date-hour-soo-dest-2023.csv", clear
+{res}{txt}(encoding automatically selected: ISO-8859-1)
+{text}(5 vars, 8,690,367 obs)
+
+{com}. tempfile file2023
+{txt}
+{com}. save `file2023'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000001{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // 2024 Data  
+. import delimited "date-hour-soo-dest-2024.csv", clear
+{res}{txt}(encoding automatically selected: ISO-8859-1)
+{text}(5 vars, 8,939,603 obs)
+
+{com}. tempfile file2024
+{txt}
+{com}. save `file2024'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000002{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // 2025 Data
+. import delimited "date-hour-soo-dest-2025.csv", clear 
+{res}{txt}(encoding automatically selected: ISO-8859-1)
+{text}(5 vars, 5,376,453 obs)
+
+{com}. tempfile file2025
+{txt}
+{com}. save `file2025'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000003{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // Fare Gates Completion Dates
+. import excel "bartCompletionDates.xlsx", clear firstrow
+{res}{text}(2 vars, 50 obs)
+
+{com}. rename completionDate completion_date
+{res}{txt}
+{com}. label variable completion_date "Fare gate completion date"
+{txt}
+{com}. 
+. describe
+
+{txt}Contains data
+ Observations:{res}            50                  
+{txt}    Variables:{res}             2                  
+{txt}{hline}
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+{hline}
+{p 0 48}{res}{bind:origin         }{txt}{bind: str4    }{bind:%9s       }{space 1}{bind:         }{bind:  }{res}{res}origin{p_end}
+{p 0 48}{bind:completion_date}{txt}{bind: int     }{bind:%td       }{space 1}{bind:         }{bind:  }{res}{res}Fare gate completion date{p_end}
+{txt}{hline}
+Sorted by: 
+     Note: {res}Dataset has changed since last saved.
+{txt}
+{com}. 
+. tempfile completionDates
+{txt}
+{com}. save `completionDates'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000004{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // Fare Gates Start Date
+. import excel "bartStartDates.xlsx", clear firstrow
+{res}{text}(2 vars, 50 obs)
+
+{com}. label variable start_date "Fare gate start date"
+{txt}
+{com}. 
+. describe
+
+{txt}Contains data
+ Observations:{res}            50                  
+{txt}    Variables:{res}             2                  
+{txt}{hline}
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+{hline}
+{p 0 48}{res}{bind:origin         }{txt}{bind: str4    }{bind:%9s       }{space 1}{bind:         }{bind:  }{res}{res}origin{p_end}
+{p 0 48}{bind:start_date     }{txt}{bind: int     }{bind:%td       }{space 1}{bind:         }{bind:  }{res}{res}Fare gate start date{p_end}
+{txt}{hline}
+Sorted by: 
+     Note: {res}Dataset has changed since last saved.
+{txt}
+{com}. 
+. tempfile startDates
+{txt}
+{com}. save `startDates'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000005{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // BART station descriptive variables
+. import excel "bartStationLines.xlsx", clear firstrow
+{res}{text}(18 vars, 50 obs)
+
+{com}. 
+. label variable station_id "Station ID"
+{txt}
+{com}. label variable line_color_red "Is the station on the red line"
+{txt}
+{com}. label variable line_color_orange "Is the station on the orange line"
+{txt}
+{com}. label variable line_color_yellow "Is the station on the yellow line"
+{txt}
+{com}. label variable line_color_green "Is the station on the green line"
+{txt}
+{com}. label variable line_color_blue "Is the station on the blue line"
+{txt}
+{com}. label variable line_order_red "Where in the red line the station falls"
+{txt}
+{com}. label variable line_order_orange "Where in the orange line the station falls"
+{txt}
+{com}. label variable line_order_yellow "Where in the yellow line the station falls"
+{txt}
+{com}. label variable line_order_green "Where in the green line the station falls"
+{txt}
+{com}. label variable line_order_blue "Where in the blue line the station falls"
+{txt}
+{com}. label variable transfer_station "Transfer station"
+{txt}
+{com}. label variable nearest_transfer_point "Nearest Transfer Station"
+{txt}
+{com}. label variable downtown_core "Downtown San Francisco station"
+{txt}
+{com}. label variable parking "Parking next to the station"
+{txt}
+{com}. label variable metro_connection "Connected to Muni Metro"
+{txt}
+{com}. label variable other_train_connection "Connected to train station"
+{txt}
+{com}. label variable airport_connection "Connected to airport"
+{txt}
+{com}. 
+. tempfile bartStationLines
+{txt}
+{com}. save `bartStationLines'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000006{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // Append all files together
+. use `file2023', clear
+{txt}
+{com}. append using `file2024'
+{txt}
+{com}. append using `file2025'
+{txt}
+{com}. 
+. 
+. **# 3. Create Panel Dataset
+. ****************************
+. // Inspect the data
+. describe
+
+{txt}Contains data from {res}/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000001
+{txt} Observations:{res}    23,006,423                  
+{txt}    Variables:{res}             5                  15 Sep 2025 23:46
+{txt}{hline}
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+{hline}
+{p 0 48}{res}{bind:v1             }{txt}{bind: str10   }{bind:%10s      }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{p 0 48}{bind:v2             }{txt}{bind: byte    }{bind:%8.0g     }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{p 0 48}{bind:v3             }{txt}{bind: str4    }{bind:%9s       }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{p 0 48}{bind:v4             }{txt}{bind: str4    }{bind:%9s       }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{p 0 48}{bind:v5             }{txt}{bind: int     }{bind:%8.0g     }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{txt}{hline}
+Sorted by: 
+     Note: {res}Dataset has changed since last saved.
+{txt}
+{com}. summarize
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 10}v1 {c |}{res}          0
+{txt}{space 10}v2 {c |}{res} 23,006,423    13.70576    5.343343          0         23
+{txt}{space 10}v3 {c |}{res}          0
+{txt}{space 10}v4 {c |}{res}          0
+{txt}{space 10}v5 {c |}{res} 23,006,423    5.798801    11.51835          1       1030
+{txt}
+{com}. 
+. // rename variables and label data
+. label data "Appended BART Ridership Data 2023-2025"
+{txt}
+{com}. rename (v1 v2 v3 v4 v5) (date hour origin destination riders)
+{res}{txt}
+{com}. label variable date "Date"
+{txt}
+{com}. label variable hour "Hour from 0 to 23"
+{txt}
+{com}. label variable origin "Starting Station"
+{txt}
+{com}. label variable destination "Destination Station"
+{txt}
+{com}. label variable riders "Hourly Riders"
+{txt}
+{com}. 
+. // Generate origin destination pair (route)
+. egen route_id = group(origin destination)
+{txt}
+{com}. gen route = origin + " to " + destination
+{txt}
+{com}. 
+. // Convert string date to Stata date format (adjust format if needed)
+. gen date_numeric = date(date, "YMD")
+{txt}
+{com}. format date_numeric %td
+{txt}
+{com}. drop date
+{txt}
+{com}. rename date_numeric date
+{res}{txt}
+{com}. label variable date "Date (Stata format)"
+{txt}
+{com}. 
+. // Collapse to daily data
+. collapse (sum) riders, by(date origin destination route route_id)
+{res}{txt}
+{com}. 
+. // Establish daily panel
+. sort route_id date
+{txt}
+{com}. xtset route_id date
+{res}
+{col 1}{txt:Panel variable: }{res:route_id}{txt: (unbalanced)}
+{p 1 16 2}{txt:Time variable: }{res:date}{txt:, }{res:{bind:01jan2023}}{txt: to }{res:{bind:02aug2025}}{txt:, but with gaps}{p_end}
+{txt}{col 10}Delta: {res}1 day
+{txt}
+{com}. tsfill, full
+{txt}
+{com}. 
+. // Populate the missing origin and destination values using the route ID
+. bysort route_id: replace origin = origin[_n-1] if missing(origin) & _n > 1
+{txt}(93,485 real changes made)
+
+{com}. bysort route_id: replace destination = destination[_n-1] if missing(destination) & _n > 1
+{txt}(93,485 real changes made)
+
+{com}. 
+. // Handle the first observation for each route if it was missing
+. bysort route_id: replace origin = origin[_N] if missing(origin)
+{txt}(462 real changes made)
+
+{com}. bysort route_id: replace destination = destination[_N] if missing(destination)
+{txt}(462 real changes made)
+
+{com}. 
+. // Now handle missing values for riders
+. replace riders = 0 if missing(riders)
+{txt}(93,947 real changes made)
+
+{com}. 
+. // Create day of week variables
+. gen dow = dow(date)
+{txt}
+{com}. label variable dow "Day of Week (0=Sun, 6=Sat)"
+{txt}
+{com}. 
+. // Create log ridership
+. gen log_riders = log(riders)
+{txt}(93,947 missing values generated)
+
+{com}. 
+. // Label the variables
+. label variable riders "Daily ridership on route"
+{txt}
+{com}. label variable log_riders "Log ridership from origin to destination"
+{txt}
+{com}. label variable route "Origin destination pair"
+{txt}
+{com}. 
+. // Final panel check
+. xtset route_id date
+{res}
+{col 1}{txt:Panel variable: }{res:route_id}{txt: (strongly balanced)}
+{p 1 16 2}{txt:Time variable: }{res:date}{txt:, }{res:{bind:01jan2023}}{txt: to }{res:{bind:02aug2025}}{p_end}
+{txt}{col 10}Delta: {res}1 day
+{txt}
+{com}. xtdescribe
+
+{txt}route_id:  {res}1{txt}, {res}2{txt}, ..., {res}2500                                   {txt}n ={res}       2500
+    {txt}date:  {res}01jan2023, 02jan2023, ..., 02aug2025              {txt}T ={res}        945
+           {txt}Delta(date) = {res}1 day
+           {txt}Span(date)  = {res}945 periods
+           {txt}(route_id*date uniquely identifies each observation)
+
+Distribution of T_i:   min      5%     25%       50%       75%     95%     max
+                    {res}   945     945     945       945       945     945     945
+
+{txt}{col 6}Freq.  Percent    Cum. {c |}  Pattern*
+ {hline 27}{c +}{c -}{c -}{hline 106}
+{res}     2500    100.00  100.00{txt} {c |}  {res}999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+{txt} {hline 27}{c +}{c -}{c -}{hline 106}
+{res}     2500    100.00        {txt} {c |}  {res}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+{txt} {hline 27}{c BT}{c -}{c -}{hline 106}
+ *Each column represents 9 periods.
+
+
+{com}. 
+. 
+. **# 4. Merge with Fare Gate Completion and Start Dates
+. ********************************************
+. // Prepare station names for merging
+. replace origin = upper(trim(origin))
+{txt}(0 real changes made)
+
+{com}. replace destination = upper(trim(destination))
+{txt}(0 real changes made)
+
+{com}. 
+. // Merge completion dates (origin)
+. merge m:1 origin using `completionDates', keep(master matched) generate(merge_origin)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_origin==3)
+{col 5}{hline 41}
+
+{com}. 
+. rename completion_date origin_completion_date
+{res}{txt}
+{com}. 
+. // Check merge results
+. drop if merge_origin == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_origin
+{txt}
+{com}. 
+. // Label the existing variable 
+. label variable origin_completion_date "Origin station fare gate completion date"
+{txt}
+{com}. 
+. // Merge completion dates (destination)
+. preserve
+{txt}
+{com}. use `completionDates', clear
+{txt}
+{com}. rename origin destination
+{res}{txt}
+{com}. save temp_dest_dates, replace
+{txt}{p 0 4 2}
+(file {bf}
+temp_dest_dates.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+temp_dest_dates.dta{rm}
+saved
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. merge m:1 destination using temp_dest_dates, keep(master matched) generate(merge_destination)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_destination==3)
+{col 5}{hline 41}
+
+{com}. rename completion_date destination_completion_date
+{res}{txt}
+{com}. 
+. // Check merge results
+. drop if merge_destination == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_destination
+{txt}
+{com}. 
+. // Clean up temporary file
+. erase temp_dest_dates.dta
+{txt}
+{com}. 
+. // Label the variable
+. label variable destination_completion_date "Destination station fare gate completion date"
+{txt}
+{com}. 
+. // Merge start dates (origin)
+. merge m:1 origin using `startDates', keep(master matched) generate(merge_origin)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_origin==3)
+{col 5}{hline 41}
+
+{com}. 
+. rename start_date origin_start_date
+{res}{txt}
+{com}. 
+. // Check merge results
+. drop if merge_origin == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_origin
+{txt}
+{com}. 
+. // Label the existing variable 
+. label variable origin_start_date "Origin station fare gate start date"
+{txt}
+{com}. 
+. // Merge start dates (destination)
+. preserve
+{txt}
+{com}. use `startDates', clear
+{txt}
+{com}. rename origin destination
+{res}{txt}
+{com}. save temp_dest_dates, replace
+{txt}{p 0 4 2}
+(file {bf}
+temp_dest_dates.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+temp_dest_dates.dta{rm}
+saved
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. merge m:1 destination using temp_dest_dates, keep(master matched) generate(merge_destination)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_destination==3)
+{col 5}{hline 41}
+
+{com}. rename start_date destination_start_date
+{res}{txt}
+{com}. 
+. // Check merge results
+. drop if merge_destination == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_destination
+{txt}
+{com}. 
+. // Clean up temporary file
+. erase temp_dest_dates.dta
+{txt}
+{com}. 
+. // Label the variable
+. label variable destination_start_date "Destination station fare gate start date"
+{txt}
+{com}. 
+. // Merge origin station characteristics
+. preserve
+{txt}
+{com}. use `bartStationLines', clear
+{txt}
+{com}. rename station_id origin
+{res}{txt}
+{com}. rename line_color_red origin_red
+{res}{txt}
+{com}. rename line_color_orange origin_orange
+{res}{txt}
+{com}. rename line_color_yellow origin_yellow
+{res}{txt}
+{com}. rename line_color_green origin_green
+{res}{txt}
+{com}. rename line_color_blue origin_blue
+{res}{txt}
+{com}. rename line_order_red origin_order_red
+{res}{txt}
+{com}. rename line_order_orange origin_order_orange
+{res}{txt}
+{com}. rename line_order_yellow origin_order_yellow
+{res}{txt}
+{com}. rename line_order_green origin_order_green
+{res}{txt}
+{com}. rename line_order_blue origin_order_blue
+{res}{txt}
+{com}. rename transfer_station origin_transfer
+{res}{txt}
+{com}. rename nearest_transfer_point origin_nearest_transfer_point
+{res}{txt}
+{com}. rename downtown_core origin_downtown
+{res}{txt}
+{com}. rename parking origin_parking
+{res}{txt}
+{com}. rename metro_connection origin_metro
+{res}{txt}
+{com}. rename other_train_connection origin_other_train
+{res}{txt}
+{com}. rename airport_connection origin_airport
+{res}{txt}
+{com}. save temp_bart_lines, replace
+{txt}{p 0 4 2}
+(file {bf}
+temp_bart_lines.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+temp_bart_lines.dta{rm}
+saved
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. merge m:1 origin using temp_bart_lines, keep(master matched) generate(merge_origin)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_origin==3)
+{col 5}{hline 41}
+
+{com}. 
+. // Check merge results
+. drop if merge_origin == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_origin
+{txt}
+{com}. 
+. // Clean up temporary file
+. erase temp_bart_lines.dta
+{txt}
+{com}. 
+. // Merge destination station characteristics
+. preserve
+{txt}
+{com}. use `bartStationLines', clear
+{txt}
+{com}. rename station_id destination
+{res}{txt}
+{com}. rename line_color_red destination_red
+{res}{txt}
+{com}. rename line_color_orange destination_orange
+{res}{txt}
+{com}. rename line_color_yellow destination_yellow
+{res}{txt}
+{com}. rename line_color_green destination_green
+{res}{txt}
+{com}. rename line_color_blue destination_blue
+{res}{txt}
+{com}. rename line_order_red destination_order_red
+{res}{txt}
+{com}. rename line_order_orange destination_order_orange
+{res}{txt}
+{com}. rename line_order_yellow destination_order_yellow
+{res}{txt}
+{com}. rename line_order_green destination_order_green
+{res}{txt}
+{com}. rename line_order_blue destination_order_blue
+{res}{txt}
+{com}. rename transfer_station destination_transfer
+{res}{txt}
+{com}. rename nearest_transfer_point dest_nearest_transfer_point
+{res}{txt}
+{com}. rename downtown_core destination_downtown
+{res}{txt}
+{com}. rename parking destination_parking
+{res}{txt}
+{com}. rename metro_connection destination_metro
+{res}{txt}
+{com}. rename other_train_connection destination_other_train
+{res}{txt}
+{com}. rename airport_connection destination_airport
+{res}{txt}
+{com}. save temp_bart_lines, replace
+{txt}{p 0 4 2}
+(file {bf}
+temp_bart_lines.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+temp_bart_lines.dta{rm}
+saved
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. merge m:1 destination using temp_bart_lines, keep(master matched) generate(merge_destination)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_destination==3)
+{col 5}{hline 41}
+
+{com}. 
+. // Check merge results
+. drop if merge_destination == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_destination
+{txt}
+{com}. 
+. // Clean up temporary file
+. erase temp_bart_lines.dta
+{txt}
+{com}. 
+. 
+. **# 5. Create Needed Variables
+. *******************************
+. 
+. // Create Treatment Variables
+. gen treated_origin = ///
+>         ((date >= origin_completion_date) & !missing(origin_completion_date))
+{txt}
+{com}.         
+. label variable treated_origin "Origin post fare gate installment"
+{txt}
+{com}. 
+. gen treated_destination = ///
+>         ((date >= destination_completion_date) & !missing(destination_completion_date))
+{txt}
+{com}.         
+. label variable treated_destination "Destination post fare gate installment"
+{txt}
+{com}. 
+. gen treated_either = ///
+>         ((date >= origin_completion_date) & !missing(origin_completion_date)) | ///
+>         ((date >= destination_completion_date) & !missing(destination_completion_date))
+{txt}
+{com}.         
+. label variable treated_either "Either origin or destination post fare gate installment"
+{txt}
+{com}. 
+. gen treated_both = ///
+>         ((date >= origin_completion_date) & !missing(origin_completion_date)) & ///
+>         ((date >= destination_completion_date) & !missing(destination_completion_date))
+{txt}
+{com}.         
+. label variable treated_both "Both origin or destination post fare gate installment"
+{txt}
+{com}. 
+. // Create Under Construction Variable
+. gen under_construction = ///
+>     ((date < origin_completion_date) & (date >= origin_start_date) & !missing(origin_start_date)) | ///
+>     ((date < destination_completion_date) & (date >= destination_start_date) & !missing(destination_start_date))
+{txt}
+{com}. 
+. label variable under_construction "Either origin or destination fare gate under construction"
+{txt}
+{com}. 
+. // Create time-to-treatment variable
+. gen earliest_completion_route = min(origin_completion_date, destination_completion_date)
+{txt}
+{com}. gen time_to_treatment_route = date - earliest_completion_route
+{txt}
+{com}. label variable earliest_completion_route "Date of earliest fare gate completion on the route"
+{txt}
+{com}. label variable time_to_treatment_route "Days relative to fare gate completion "
+{txt}
+{com}. 
+. // Create stops variable - simplified version
+. gen stops = 999
+{txt}
+{com}. 
+. // Direct connections only
+. foreach line in red orange yellow green blue {c -(}
+{txt}  2{com}.     replace stops = abs(origin_order_`line' - destination_order_`line') if ///
+>         origin_`line' == 1 & destination_`line' == 1 & ///
+>         origin_order_`line' != 0 & destination_order_`line' != 0 & ///
+>         stops == 999
+{txt}  3{com}. {c )-}
+{txt}(544,320 real changes made)
+(340,200 real changes made)
+(434,700 real changes made)
+(226,800 real changes made)
+(93,555 real changes made)
+
+{com}. 
+. // For now, just identify transfers without calculating exact stops
+. gen transfer_needed = (stops == 999) if !missing(stops)
+{txt}
+{com}. replace transfer_needed = 0 if stops != 999 & stops != .
+{txt}(0 real changes made)
+
+{com}. 
+. label variable stops "Number of stops (999 = transfer)"
+{txt}
+{com}. label variable transfer_needed "1 if transfer needed"
+{txt}
+{com}. label define transfer_dummy 0 "No transfer" 1 "Transfer needed"
+{txt}
+{com}. label values transfer_needed transfer_dummy
+{txt}
+{com}. 
+. // Show summary
+. tab stops
+
+  {txt}Number of {c |}
+ stops (999 {c |}
+= transfer) {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}     46,305        1.96        1.96
+{txt}          1 {c |}{res}     92,610        3.92        5.88
+{txt}          2 {c |}{res}     92,610        3.92        9.80
+{txt}          3 {c |}{res}     92,610        3.92       13.72
+{txt}          4 {c |}{res}     92,610        3.92       17.64
+{txt}          5 {c |}{res}     92,610        3.92       21.56
+{txt}          6 {c |}{res}     92,610        3.92       25.48
+{txt}          7 {c |}{res}     92,610        3.92       29.40
+{txt}          8 {c |}{res}     92,610        3.92       33.32
+{txt}          9 {c |}{res}     92,610        3.92       37.24
+{txt}         10 {c |}{res}     90,720        3.84       41.08
+{txt}         11 {c |}{res}     86,940        3.68       44.76
+{txt}         12 {c |}{res}     83,160        3.52       48.28
+{txt}         13 {c |}{res}     77,490        3.28       51.56
+{txt}         14 {c |}{res}     71,820        3.04       54.60
+{txt}         15 {c |}{res}     66,150        2.80       57.40
+{txt}         16 {c |}{res}     58,590        2.48       59.88
+{txt}         17 {c |}{res}     51,030        2.16       62.04
+{txt}         18 {c |}{res}     43,470        1.84       63.88
+{txt}         19 {c |}{res}     35,910        1.52       65.40
+{txt}         20 {c |}{res}     28,350        1.20       66.60
+{txt}         21 {c |}{res}     20,790        0.88       67.48
+{txt}         22 {c |}{res}     15,120        0.64       68.12
+{txt}         23 {c |}{res}     11,340        0.48       68.60
+{txt}         24 {c |}{res}      7,560        0.32       68.92
+{txt}         25 {c |}{res}      5,670        0.24       69.16
+{txt}         26 {c |}{res}      3,780        0.16       69.32
+{txt}         27 {c |}{res}      1,890        0.08       69.40
+{txt}        999 {c |}{res}    722,925       30.60      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}  2,362,500      100.00
+{txt}
+{com}. tab transfer_needed
+
+  {txt}1 if transfer {c |}
+         needed {c |}      Freq.     Percent        Cum.
+{hline 16}{c +}{hline 35}
+    No transfer {c |}{res}  1,639,575       69.40       69.40
+{txt}Transfer needed {c |}{res}    722,925       30.60      100.00
+{txt}{hline 16}{c +}{hline 35}
+          Total {c |}{res}  2,362,500      100.00
+{txt}
+{com}. 
+. 
+. **# 6. Final Data Inspection & Save
+. ************************************
+. // Check the treatment variables
+. tab treated_either
+
+     {txt}Either {c |}
+  origin or {c |}
+destination {c |}
+  post fare {c |}
+       gate {c |}
+installment {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}  1,825,050       77.25       77.25
+{txt}          1 {c |}{res}    537,450       22.75      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}  2,362,500      100.00
+{txt}
+{com}. tab treated_origin
+
+{txt}Origin post {c |}
+  fare gate {c |}
+installment {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}  1,993,800       84.39       84.39
+{txt}          1 {c |}{res}    368,700       15.61      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}  2,362,500      100.00
+{txt}
+{com}. tab treated_destination  
+
+{txt}Destination {c |}
+  post fare {c |}
+       gate {c |}
+installment {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}  1,993,800       84.39       84.39
+{txt}          1 {c |}{res}    368,700       15.61      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}  2,362,500      100.00
+{txt}
+{com}. tab treated_both
+
+{txt}Both origin {c |}
+         or {c |}
+destination {c |}
+  post fare {c |}
+       gate {c |}
+installment {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}  2,162,550       91.54       91.54
+{txt}          1 {c |}{res}    199,950        8.46      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}  2,362,500      100.00
+{txt}
+{com}. sum time_to_treatment_route, detail
+
+           {txt}Days relative to fare gate completion 
+{hline 61}
+      Percentiles      Smallest
+ 1%    {res}     -837           -969
+{txt} 5%    {res}     -734           -968
+{txt}10%    {res}     -656           -967       {txt}Obs         {res}  2,362,500
+{txt}25%    {res}     -500           -967       {txt}Sum of wgt. {res}  2,362,500
+
+{txt}50%    {res}     -258                      {txt}Mean          {res}-258.1176
+                        {txt}Largest       Std. dev.     {res} 298.9221
+{txt}75%    {res}      -22            583
+{txt}90%    {res}      136            583       {txt}Variance      {res} 89354.44
+{txt}95%    {res}      217            583       {txt}Skewness      {res} .0527815
+{txt}99%    {res}      346            583       {txt}Kurtosis      {res} 2.200003
+{txt}
+{com}. 
+. // Check a few treated stations
+. list origin destination date treated_either under_construction  stops transfer_needed riders if inlist(origin, "EMBR", "CAST") & inrange(date, td(09jan2025), td(11jan2025)), noobs clean
+{txt}
+    {res}origin   desti~on        date   treate~r   under_~n   stops   transfer_needed   riders {txt} 
+    {res}  EMBR       12TH   09jan2025          0          1       2       No transfer      551 {txt} 
+    {res}  CAST       12TH   11jan2025          0          1     999   Transfer needed        3 {txt} 
+    {res}  CAST       12TH   10jan2025          0          1     999   Transfer needed       18 {txt} 
+    {res}  EMBR       12TH   10jan2025          0          1       2       No transfer      409 {txt} 
+    {res}  CAST       12TH   09jan2025          0          1     999   Transfer needed       29 {txt} 
+    {res}  EMBR       12TH   11jan2025          0          1       2       No transfer      218 {txt} 
+    {res}  CAST       16TH   09jan2025          1          0      11       No transfer       33 {txt} 
+    {res}  CAST       16TH   10jan2025          1          0      11       No transfer       30 {txt} 
+    {res}  EMBR       16TH   09jan2025          1          1       4       No transfer      488 {txt} 
+    {res}  EMBR       16TH   11jan2025          1          1       4       No transfer      233 {txt} 
+    {res}  CAST       16TH   11jan2025          1          0      11       No transfer       13 {txt} 
+    {res}  EMBR       16TH   10jan2025          1          1       4       No transfer      336 {txt} 
+    {res}  EMBR       19TH   09jan2025          0          1       3       No transfer      650 {txt} 
+    {res}  EMBR       19TH   11jan2025          0          1       3       No transfer      242 {txt} 
+    {res}  EMBR       19TH   10jan2025          0          1       3       No transfer      424 {txt} 
+    {res}  CAST       19TH   09jan2025          0          0     999   Transfer needed       21 {txt} 
+    {res}  CAST       19TH   11jan2025          0          0     999   Transfer needed        7 {txt} 
+    {res}  CAST       19TH   10jan2025          0          0     999   Transfer needed       18 {txt} 
+    {res}  EMBR       24TH   09jan2025          1          1       5       No transfer      667 {txt} 
+    {res}  CAST       24TH   09jan2025          1          0      12       No transfer       16 {txt} 
+    {res}  EMBR       24TH   10jan2025          1          1       5       No transfer      492 {txt} 
+    {res}  CAST       24TH   11jan2025          1          0      12       No transfer       19 {txt} 
+    {res}  CAST       24TH   10jan2025          1          0      12       No transfer       13 {txt} 
+    {res}  EMBR       24TH   11jan2025          1          1       5       No transfer      252 {txt} 
+    {res}  EMBR       ANTC   11jan2025          1          1      14       No transfer       47 {txt} 
+    {res}  EMBR       ANTC   09jan2025          1          1      14       No transfer      200 {txt} 
+    {res}  CAST       ANTC   11jan2025          1          0     999   Transfer needed        0 {txt} 
+    {res}  CAST       ANTC   09jan2025          1          0     999   Transfer needed        1 {txt} 
+    {res}  EMBR       ANTC   10jan2025          1          1      14       No transfer      132 {txt} 
+    {res}  CAST       ANTC   10jan2025          1          0     999   Transfer needed        2 {txt} 
+    {res}  CAST       ASHB   09jan2025          0          0     999   Transfer needed        1 {txt} 
+    {res}  EMBR       ASHB   10jan2025          0          1       5       No transfer      129 {txt} 
+    {res}  EMBR       ASHB   09jan2025          0          1       5       No transfer      244 {txt} 
+    {res}  CAST       ASHB   10jan2025          0          0     999   Transfer needed        4 {txt} 
+    {res}  EMBR       ASHB   11jan2025          0          1       5       No transfer       92 {txt} 
+    {res}  CAST       ASHB   11jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  CAST       BALB   10jan2025          0          0      14       No transfer        8 {txt} 
+    {res}  EMBR       BALB   10jan2025          0          1       7       No transfer      354 {txt} 
+    {res}  EMBR       BALB   09jan2025          0          1       7       No transfer      456 {txt} 
+    {res}  CAST       BALB   09jan2025          0          0      14       No transfer        9 {txt} 
+    {res}  EMBR       BALB   11jan2025          0          1       7       No transfer      132 {txt} 
+    {res}  CAST       BALB   11jan2025          0          0      14       No transfer        1 {txt} 
+    {res}  CAST       BAYF   10jan2025          0          0       1       No transfer       26 {txt} 
+    {res}  EMBR       BAYF   10jan2025          0          1       6       No transfer      200 {txt} 
+    {res}  EMBR       BAYF   11jan2025          0          1       6       No transfer       97 {txt} 
+    {res}  EMBR       BAYF   09jan2025          0          1       6       No transfer      271 {txt} 
+    {res}  CAST       BAYF   11jan2025          0          0       1       No transfer       15 {txt} 
+    {res}  CAST       BAYF   09jan2025          0          0       1       No transfer       21 {txt} 
+    {res}  CAST       BERY   09jan2025          0          0     999   Transfer needed        6 {txt} 
+    {res}  EMBR       BERY   11jan2025          0          1      13       No transfer       37 {txt} 
+    {res}  CAST       BERY   10jan2025          0          0     999   Transfer needed        4 {txt} 
+    {res}  EMBR       BERY   09jan2025          0          1      13       No transfer      138 {txt} 
+    {res}  CAST       BERY   11jan2025          0          0     999   Transfer needed        9 {txt} 
+    {res}  EMBR       BERY   10jan2025          0          1      13       No transfer       85 {txt} 
+    {res}  EMBR       CAST   11jan2025          0          1       7       No transfer       61 {txt} 
+    {res}  CAST       CAST   09jan2025          0          0       0       No transfer        6 {txt} 
+    {res}  CAST       CAST   10jan2025          0          0       0       No transfer        7 {txt} 
+    {res}  CAST       CAST   11jan2025          0          0       0       No transfer        7 {txt} 
+    {res}  EMBR       CAST   10jan2025          0          1       7       No transfer      128 {txt} 
+    {res}  EMBR       CAST   09jan2025          0          1       7       No transfer      226 {txt} 
+    {res}  CAST       CIVC   10jan2025          1          0      10       No transfer      103 {txt} 
+    {res}  CAST       CIVC   11jan2025          1          0      10       No transfer       46 {txt} 
+    {res}  EMBR       CIVC   09jan2025          1          1       3       No transfer      144 {txt} 
+    {res}  CAST       CIVC   09jan2025          1          0      10       No transfer      112 {txt} 
+    {res}  EMBR       CIVC   10jan2025          1          1       3       No transfer      123 {txt} 
+    {res}  EMBR       CIVC   11jan2025          1          1       3       No transfer       55 {txt} 
+    {res}  CAST       COLM   09jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  CAST       COLM   11jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  EMBR       COLM   09jan2025          0          1       9       No transfer      234 {txt} 
+    {res}  EMBR       COLM   10jan2025          0          1       9       No transfer      141 {txt} 
+    {res}  EMBR       COLM   11jan2025          0          1       9       No transfer       33 {txt} 
+    {res}  CAST       COLM   10jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       COLS   09jan2025          1          1       4       No transfer      151 {txt} 
+    {res}  CAST       COLS   09jan2025          1          0       3       No transfer       29 {txt} 
+    {res}  EMBR       COLS   11jan2025          1          1       4       No transfer       73 {txt} 
+    {res}  CAST       COLS   11jan2025          1          0       3       No transfer        8 {txt} 
+    {res}  EMBR       COLS   10jan2025          1          1       4       No transfer      142 {txt} 
+    {res}  CAST       COLS   10jan2025          1          0       3       No transfer       21 {txt} 
+    {res}  CAST       CONC   09jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  EMBR       CONC   09jan2025          0          1      10       No transfer      323 {txt} 
+    {res}  EMBR       CONC   10jan2025          0          1      10       No transfer      200 {txt} 
+    {res}  CAST       CONC   11jan2025          0          0     999   Transfer needed        4 {txt} 
+    {res}  CAST       CONC   10jan2025          0          0     999   Transfer needed        4 {txt} 
+    {res}  EMBR       CONC   11jan2025          0          1      10       No transfer      100 {txt} 
+    {res}  CAST       DALY   09jan2025          0          0      15       No transfer        8 {txt} 
+    {res}  CAST       DALY   11jan2025          0          0      15       No transfer       10 {txt} 
+    {res}  EMBR       DALY   10jan2025          0          1       8       No transfer      389 {txt} 
+    {res}  EMBR       DALY   11jan2025          0          1       8       No transfer      145 {txt} 
+    {res}  EMBR       DALY   09jan2025          0          1       8       No transfer      574 {txt} 
+    {res}  CAST       DALY   10jan2025          0          0      15       No transfer       13 {txt} 
+    {res}  CAST       DBRK   11jan2025          0          0     999   Transfer needed       15 {txt} 
+    {res}  EMBR       DBRK   11jan2025          0          1       6       No transfer      279 {txt} 
+    {res}  CAST       DBRK   10jan2025          0          0     999   Transfer needed       17 {txt} 
+    {res}  CAST       DBRK   09jan2025          0          0     999   Transfer needed       14 {txt} 
+    {res}  EMBR       DBRK   10jan2025          0          1       6       No transfer      325 {txt} 
+    {res}  EMBR       DBRK   09jan2025          0          1       6       No transfer      344 {txt} 
+    {res}  CAST       DELN   11jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  EMBR       DELN   09jan2025          0          1       9       No transfer      398 {txt} 
+    {res}  CAST       DELN   09jan2025          0          0     999   Transfer needed        5 {txt} 
+    {res}  EMBR       DELN   10jan2025          0          1       9       No transfer      311 {txt} 
+    {res}  CAST       DELN   10jan2025          0          0     999   Transfer needed        5 {txt} 
+    {res}  EMBR       DELN   11jan2025          0          1       9       No transfer      159 {txt} 
+    {res}  CAST       DUBL   09jan2025          1          0       2       No transfer       57 {txt} 
+    {res}  EMBR       DUBL   09jan2025          1          1       9       No transfer      702 {txt} 
+    {res}  CAST       DUBL   11jan2025          1          0       2       No transfer       40 {txt} 
+    {res}  EMBR       DUBL   10jan2025          1          1       9       No transfer      376 {txt} 
+    {res}  EMBR       DUBL   11jan2025          1          1       9       No transfer      205 {txt} 
+    {res}  CAST       DUBL   10jan2025          1          0       2       No transfer       51 {txt} 
+    {res}  CAST       EMBR   11jan2025          0          1       7       No transfer       60 {txt} 
+    {res}  EMBR       EMBR   09jan2025          0          1       0       No transfer      122 {txt} 
+    {res}  CAST       EMBR   10jan2025          0          1       7       No transfer      153 {txt} 
+    {res}  CAST       EMBR   09jan2025          0          1       7       No transfer      257 {txt} 
+    {res}  EMBR       EMBR   11jan2025          0          1       0       No transfer      122 {txt} 
+    {res}  EMBR       EMBR   10jan2025          0          1       0       No transfer      152 {txt} 
+    {res}  EMBR       FRMT   09jan2025          0          1      10       No transfer      288 {txt} 
+    {res}  EMBR       FRMT   10jan2025          0          1      10       No transfer      154 {txt} 
+    {res}  CAST       FRMT   11jan2025          0          0     999   Transfer needed       10 {txt} 
+    {res}  CAST       FRMT   09jan2025          0          0     999   Transfer needed       17 {txt} 
+    {res}  EMBR       FRMT   11jan2025          0          1      10       No transfer      117 {txt} 
+    {res}  CAST       FRMT   10jan2025          0          0     999   Transfer needed       15 {txt} 
+    {res}  EMBR       FTVL   10jan2025          1          1       3       No transfer      298 {txt} 
+    {res}  CAST       FTVL   10jan2025          1          0       4       No transfer       43 {txt} 
+    {res}  CAST       FTVL   11jan2025          1          0       4       No transfer       28 {txt} 
+    {res}  EMBR       FTVL   09jan2025          1          1       3       No transfer      398 {txt} 
+    {res}  CAST       FTVL   09jan2025          1          0       4       No transfer       32 {txt} 
+    {res}  EMBR       FTVL   11jan2025          1          1       3       No transfer      142 {txt} 
+    {res}  EMBR       GLEN   11jan2025          0          1       6       No transfer      123 {txt} 
+    {res}  EMBR       GLEN   09jan2025          0          1       6       No transfer      502 {txt} 
+    {res}  EMBR       GLEN   10jan2025          0          1       6       No transfer      305 {txt} 
+    {res}  CAST       GLEN   09jan2025          0          0      13       No transfer        8 {txt} 
+    {res}  CAST       GLEN   11jan2025          0          0      13       No transfer        6 {txt} 
+    {res}  CAST       GLEN   10jan2025          0          0      13       No transfer       12 {txt} 
+    {res}  CAST       HAYW   09jan2025          1          0     999   Transfer needed        8 {txt} 
+    {res}  CAST       HAYW   11jan2025          1          0     999   Transfer needed        6 {txt} 
+    {res}  EMBR       HAYW   10jan2025          1          1       7       No transfer      117 {txt} 
+    {res}  CAST       HAYW   10jan2025          1          0     999   Transfer needed        9 {txt} 
+    {res}  EMBR       HAYW   11jan2025          1          1       7       No transfer       69 {txt} 
+    {res}  EMBR       HAYW   09jan2025          1          1       7       No transfer      165 {txt} 
+    {res}  EMBR       LAFY   10jan2025          0          1       7       No transfer      228 {txt} 
+    {res}  CAST       LAFY   09jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  CAST       LAFY   10jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  EMBR       LAFY   09jan2025          0          1       7       No transfer      437 {txt} 
+    {res}  CAST       LAFY   11jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  EMBR       LAFY   11jan2025          0          1       7       No transfer      101 {txt} 
+    {res}  EMBR       LAKE   11jan2025          0          1       2       No transfer      152 {txt} 
+    {res}  EMBR       LAKE   09jan2025          0          1       2       No transfer      338 {txt} 
+    {res}  CAST       LAKE   09jan2025          0          0       5       No transfer       58 {txt} 
+    {res}  EMBR       LAKE   10jan2025          0          1       2       No transfer      236 {txt} 
+    {res}  CAST       LAKE   10jan2025          0          0       5       No transfer       45 {txt} 
+    {res}  CAST       LAKE   11jan2025          0          0       5       No transfer       27 {txt} 
+    {res}  EMBR       MCAR   11jan2025          0          1       4       No transfer      218 {txt} 
+    {res}  CAST       MCAR   11jan2025          0          0     999   Transfer needed        4 {txt} 
+    {res}  CAST       MCAR   09jan2025          0          0     999   Transfer needed       11 {txt} 
+    {res}  EMBR       MCAR   10jan2025          0          1       4       No transfer      341 {txt} 
+    {res}  CAST       MCAR   10jan2025          0          0     999   Transfer needed        5 {txt} 
+    {res}  EMBR       MCAR   09jan2025          0          1       4       No transfer      563 {txt} 
+    {res}  EMBR       MLBR   09jan2025          0          1      13       No transfer      171 {txt} 
+    {res}  EMBR       MLBR   11jan2025          0          1      13       No transfer       71 {txt} 
+    {res}  CAST       MLBR   10jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  EMBR       MLBR   10jan2025          0          1      13       No transfer       89 {txt} 
+    {res}  CAST       MLBR   11jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  CAST       MLBR   09jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  CAST       MLPT   09jan2025          0          0     999   Transfer needed        6 {txt} 
+    {res}  CAST       MLPT   11jan2025          0          0     999   Transfer needed        4 {txt} 
+    {res}  EMBR       MLPT   10jan2025          0          1      12       No transfer       61 {txt} 
+    {res}  EMBR       MLPT   11jan2025          0          1      12       No transfer       29 {txt} 
+    {res}  EMBR       MLPT   09jan2025          0          1      12       No transfer      109 {txt} 
+    {res}  CAST       MLPT   10jan2025          0          0     999   Transfer needed        5 {txt} 
+    {res}  EMBR       MONT   09jan2025          1          1       1       No transfer       26 {txt} 
+    {res}  CAST       MONT   10jan2025          1          0       8       No transfer      121 {txt} 
+    {res}  EMBR       MONT   10jan2025          1          1       1       No transfer       31 {txt} 
+    {res}  EMBR       MONT   11jan2025          1          1       1       No transfer       25 {txt} 
+    {res}  CAST       MONT   09jan2025          1          0       8       No transfer      197 {txt} 
+    {res}  CAST       MONT   11jan2025          1          0       8       No transfer       59 {txt} 
+    {res}  CAST       NBRK   11jan2025          0          0     999   Transfer needed        1 {txt} 
+    {res}  EMBR       NBRK   11jan2025          0          1       7       No transfer      143 {txt} 
+    {res}  EMBR       NBRK   09jan2025          0          1       7       No transfer      332 {txt} 
+    {res}  EMBR       NBRK   10jan2025          0          1       7       No transfer      204 {txt} 
+    {res}  CAST       NBRK   09jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  CAST       NBRK   10jan2025          0          0     999   Transfer needed        1 {txt} 
+    {res}  EMBR       NCON   09jan2025          0          1      11       No transfer       83 {txt} 
+    {res}  CAST       NCON   11jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  CAST       NCON   10jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  CAST       NCON   09jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  EMBR       NCON   10jan2025          0          1      11       No transfer       47 {txt} 
+    {res}  EMBR       NCON   11jan2025          0          1      11       No transfer       21 {txt} 
+    {res}  CAST       OAKL   09jan2025          1          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       OAKL   09jan2025          1          1     999   Transfer needed       46 {txt} 
+    {res}  EMBR       OAKL   10jan2025          1          1     999   Transfer needed       26 {txt} 
+    {res}  EMBR       OAKL   11jan2025          1          1     999   Transfer needed       15 {txt} 
+    {res}  CAST       OAKL   10jan2025          1          0     999   Transfer needed        1 {txt} 
+    {res}  CAST       OAKL   11jan2025          1          0     999   Transfer needed        1 {txt} 
+    {res}  EMBR       ORIN   10jan2025          0          1       6       No transfer      183 {txt} 
+    {res}  CAST       ORIN   09jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  CAST       ORIN   11jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  EMBR       ORIN   09jan2025          0          1       6       No transfer      431 {txt} 
+    {res}  CAST       ORIN   10jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       ORIN   11jan2025          0          1       6       No transfer       88 {txt} 
+    {res}  EMBR       PCTR   09jan2025          0          1      13       No transfer       31 {txt} 
+    {res}  EMBR       PCTR   10jan2025          0          1      13       No transfer       25 {txt} 
+    {res}  EMBR       PCTR   11jan2025          0          1      13       No transfer        8 {txt} 
+    {res}  CAST       PCTR   10jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  CAST       PCTR   11jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  CAST       PCTR   09jan2025          0          0     999   Transfer needed        1 {txt} 
+    {res}  EMBR       PHIL   11jan2025          0          1       9       No transfer      138 {txt} 
+    {res}  CAST       PHIL   11jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       PHIL   10jan2025          0          1       9       No transfer      313 {txt} 
+    {res}  CAST       PHIL   09jan2025          0          0     999   Transfer needed        4 {txt} 
+    {res}  CAST       PHIL   10jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       PHIL   09jan2025          0          1       9       No transfer      551 {txt} 
+    {res}  CAST       PITT   11jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  CAST       PITT   09jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       PITT   09jan2025          0          1      12       No transfer      267 {txt} 
+    {res}  EMBR       PITT   11jan2025          0          1      12       No transfer       56 {txt} 
+    {res}  CAST       PITT   10jan2025          0          0     999   Transfer needed        1 {txt} 
+    {res}  EMBR       PITT   10jan2025          0          1      12       No transfer      188 {txt} 
+    {res}  EMBR       PLZA   11jan2025          0          1       8       No transfer       93 {txt} 
+    {res}  CAST       PLZA   09jan2025          0          0     999   Transfer needed        1 {txt} 
+    {res}  CAST       PLZA   11jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       PLZA   09jan2025          0          1       8       No transfer      278 {txt} 
+    {res}  CAST       PLZA   10jan2025          0          0     999   Transfer needed       11 {txt} 
+    {res}  EMBR       PLZA   10jan2025          0          1       8       No transfer      184 {txt} 
+    {res}  EMBR       POWL   09jan2025          1          1       2       No transfer      136 {txt} 
+    {res}  CAST       POWL   09jan2025          1          0       9       No transfer       96 {txt} 
+    {res}  EMBR       POWL   11jan2025          1          1       2       No transfer       63 {txt} 
+    {res}  EMBR       POWL   10jan2025          1          1       2       No transfer      115 {txt} 
+    {res}  CAST       POWL   11jan2025          1          0       9       No transfer       76 {txt} 
+    {res}  CAST       POWL   10jan2025          1          0       9       No transfer       95 {txt} 
+    {res}  CAST       RICH   10jan2025          1          0     999   Transfer needed        2 {txt} 
+    {res}  CAST       RICH   09jan2025          1          0     999   Transfer needed        3 {txt} 
+    {res}  CAST       RICH   11jan2025          1          0     999   Transfer needed        3 {txt} 
+    {res}  EMBR       RICH   10jan2025          1          1      10       No transfer      193 {txt} 
+    {res}  EMBR       RICH   11jan2025          1          1      10       No transfer       61 {txt} 
+    {res}  EMBR       RICH   09jan2025          1          1      10       No transfer      219 {txt} 
+    {res}  EMBR       ROCK   10jan2025          0          1       5       No transfer      333 {txt} 
+    {res}  EMBR       ROCK   11jan2025          0          1       5       No transfer      212 {txt} 
+    {res}  CAST       ROCK   11jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       ROCK   09jan2025          0          1       5       No transfer      616 {txt} 
+    {res}  CAST       ROCK   10jan2025          0          0     999   Transfer needed        1 {txt} 
+    {res}  CAST       ROCK   09jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  EMBR       SANL   09jan2025          0          1       5       No transfer      370 {txt} 
+    {res}  EMBR       SANL   10jan2025          0          1       5       No transfer      239 {txt} 
+    {res}  CAST       SANL   09jan2025          0          0       2       No transfer       29 {txt} 
+    {res}  CAST       SANL   11jan2025          0          0       2       No transfer       21 {txt} 
+    {res}  CAST       SANL   10jan2025          0          0       2       No transfer       36 {txt} 
+    {res}  EMBR       SANL   11jan2025          0          1       5       No transfer      108 {txt} 
+    {res}  CAST       SBRN   09jan2025          0          0     999   Transfer needed        1 {txt} 
+    {res}  CAST       SBRN   10jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  CAST       SBRN   11jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       SBRN   10jan2025          0          1      11       No transfer      106 {txt} 
+    {res}  EMBR       SBRN   09jan2025          0          1      11       No transfer      157 {txt} 
+    {res}  EMBR       SBRN   11jan2025          0          1      11       No transfer       46 {txt} 
+    {res}  CAST       SFIA   09jan2025          1          0     999   Transfer needed        4 {txt} 
+    {res}  EMBR       SFIA   11jan2025          1          1      12       No transfer      106 {txt} 
+    {res}  EMBR       SFIA   10jan2025          1          1      12       No transfer      140 {txt} 
+    {res}  CAST       SFIA   10jan2025          1          0     999   Transfer needed       11 {txt} 
+    {res}  CAST       SFIA   11jan2025          1          0     999   Transfer needed        3 {txt} 
+    {res}  EMBR       SFIA   09jan2025          1          1      12       No transfer      160 {txt} 
+    {res}  EMBR       SHAY   09jan2025          0          1       8       No transfer      131 {txt} 
+    {res}  EMBR       SHAY   11jan2025          1          1       8       No transfer       63 {txt} 
+    {res}  CAST       SHAY   10jan2025          1          0     999   Transfer needed       11 {txt} 
+    {res}  EMBR       SHAY   10jan2025          1          1       8       No transfer       74 {txt} 
+    {res}  CAST       SHAY   11jan2025          1          0     999   Transfer needed        6 {txt} 
+    {res}  CAST       SHAY   09jan2025          0          1     999   Transfer needed       14 {txt} 
+    {res}  CAST       SSAN   10jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  CAST       SSAN   11jan2025          0          0     999   Transfer needed        4 {txt} 
+    {res}  EMBR       SSAN   09jan2025          0          1      10       No transfer      180 {txt} 
+    {res}  CAST       SSAN   09jan2025          0          0     999   Transfer needed        1 {txt} 
+    {res}  EMBR       SSAN   10jan2025          0          1      10       No transfer      100 {txt} 
+    {res}  EMBR       SSAN   11jan2025          0          1      10       No transfer       37 {txt} 
+    {res}  CAST       UCTY   09jan2025          0          0     999   Transfer needed       11 {txt} 
+    {res}  EMBR       UCTY   11jan2025          0          1       9       No transfer       65 {txt} 
+    {res}  CAST       UCTY   11jan2025          0          0     999   Transfer needed        7 {txt} 
+    {res}  EMBR       UCTY   09jan2025          0          1       9       No transfer      217 {txt} 
+    {res}  CAST       UCTY   10jan2025          0          0     999   Transfer needed       10 {txt} 
+    {res}  EMBR       UCTY   10jan2025          0          1       9       No transfer      129 {txt} 
+    {res}  EMBR       WARM   10jan2025          1          1      11       No transfer       49 {txt} 
+    {res}  CAST       WARM   11jan2025          1          0     999   Transfer needed        1 {txt} 
+    {res}  EMBR       WARM   11jan2025          1          1      11       No transfer       39 {txt} 
+    {res}  CAST       WARM   10jan2025          1          0     999   Transfer needed        3 {txt} 
+    {res}  CAST       WARM   09jan2025          1          0     999   Transfer needed        8 {txt} 
+    {res}  EMBR       WARM   09jan2025          1          1      11       No transfer      117 {txt} 
+    {res}  CAST       WCRK   11jan2025          0          0     999   Transfer needed        0 {txt} 
+    {res}  CAST       WCRK   10jan2025          0          0     999   Transfer needed        3 {txt} 
+    {res}  CAST       WCRK   09jan2025          0          0     999   Transfer needed        2 {txt} 
+    {res}  EMBR       WCRK   11jan2025          0          1       8       No transfer      195 {txt} 
+    {res}  EMBR       WCRK   10jan2025          0          1       8       No transfer      292 {txt} 
+    {res}  EMBR       WCRK   09jan2025          0          1       8       No transfer      600 {txt} 
+    {res}  EMBR       WDUB   09jan2025          0          1       8       No transfer      307 {txt} 
+    {res}  EMBR       WDUB   10jan2025          0          1       8       No transfer      151 {txt} 
+    {res}  EMBR       WDUB   11jan2025          0          1       8       No transfer       73 {txt} 
+    {res}  CAST       WDUB   10jan2025          0          0       1       No transfer       38 {txt} 
+    {res}  CAST       WDUB   09jan2025          0          0       1       No transfer       39 {txt} 
+    {res}  CAST       WDUB   11jan2025          0          0       1       No transfer       53 {txt} 
+    {res}  EMBR       WOAK   09jan2025          1          1       1       No transfer      883 {txt} 
+    {res}  CAST       WOAK   10jan2025          1          0       6       No transfer        5 {txt} 
+    {res}  CAST       WOAK   09jan2025          1          0       6       No transfer        7 {txt} 
+    {res}  CAST       WOAK   11jan2025          1          0       6       No transfer        6 {txt} 
+    {res}  EMBR       WOAK   10jan2025          1          1       1       No transfer      600 {txt} 
+    {res}  EMBR       WOAK   11jan2025          1          1       1       No transfer      347 {txt} 
+
+{com}. 
+. // Save the final dataset
+. save "bart_ridership_2023_2025_with_treatment.dta", replace
+{txt}{p 0 4 2}
+file {bf}
+bart_ridership_2023_2025_with_treatment.dta{rm}
+saved
+{p_end}
+
+{com}. 
+. // Close the log file
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}/Users/austincoffelt/Documents/bart_fare_gates_project/results/analysis_log_15 Sep 2025.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}15 Sep 2025, 23:48:41
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}

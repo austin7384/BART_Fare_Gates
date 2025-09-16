@@ -1,0 +1,762 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/austincoffelt/Documents/bart_fare_gates_project/results/analysis_log_14 Sep 2025.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}14 Sep 2025, 23:56:38
+{txt}
+{com}. 
+. 
+. **# 2. Load Data
+. ******************
+. cd "$data" 
+{res}/Users/austincoffelt/Documents/bart_fare_gates_project/data
+{txt}
+{com}. 
+. // 2023 Data
+. import delimited "date-hour-soo-dest-2023.csv", clear
+{res}{txt}(encoding automatically selected: ISO-8859-1)
+{text}(5 vars, 8,690,367 obs)
+
+{com}. tempfile file2023
+{txt}
+{com}. save `file2023'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000001{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // 2024 Data  
+. import delimited "date-hour-soo-dest-2024.csv", clear
+{res}{txt}(encoding automatically selected: ISO-8859-1)
+{text}(5 vars, 8,939,603 obs)
+
+{com}. tempfile file2024
+{txt}
+{com}. save `file2024'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000002{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // 2025 Data
+. import delimited "date-hour-soo-dest-2025.csv", clear 
+{res}{txt}(encoding automatically selected: ISO-8859-1)
+{text}(5 vars, 5,376,453 obs)
+
+{com}. tempfile file2025
+{txt}
+{com}. save `file2025'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000003{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // Fare Gates Completion Dates
+. import excel "bartCompletionDates.xlsx", clear firstrow
+{res}{text}(2 vars, 50 obs)
+
+{com}. rename completionDate completion_date
+{res}{txt}
+{com}. label variable completion_date "Fare gate completion date"
+{txt}
+{com}. 
+. describe
+
+{txt}Contains data
+ Observations:{res}            50                  
+{txt}    Variables:{res}             2                  
+{txt}{hline}
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+{hline}
+{p 0 48}{res}{bind:origin         }{txt}{bind: str4    }{bind:%9s       }{space 1}{bind:         }{bind:  }{res}{res}origin{p_end}
+{p 0 48}{bind:completion_date}{txt}{bind: int     }{bind:%td       }{space 1}{bind:         }{bind:  }{res}{res}Fare gate completion date{p_end}
+{txt}{hline}
+Sorted by: 
+     Note: {res}Dataset has changed since last saved.
+{txt}
+{com}. 
+. tempfile completionDates
+{txt}
+{com}. save `completionDates'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000004{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // Fare Gates Start Date
+. import excel "bartStartDates.xlsx", clear firstrow
+{res}{text}(2 vars, 50 obs)
+
+{com}. label variable start_date "Fare gate start date"
+{txt}
+{com}. 
+. describe
+
+{txt}Contains data
+ Observations:{res}            50                  
+{txt}    Variables:{res}             2                  
+{txt}{hline}
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+{hline}
+{p 0 48}{res}{bind:origin         }{txt}{bind: str4    }{bind:%9s       }{space 1}{bind:         }{bind:  }{res}{res}origin{p_end}
+{p 0 48}{bind:start_date     }{txt}{bind: int     }{bind:%td       }{space 1}{bind:         }{bind:  }{res}{res}Fare gate start date{p_end}
+{txt}{hline}
+Sorted by: 
+     Note: {res}Dataset has changed since last saved.
+{txt}
+{com}. 
+. tempfile startDates
+{txt}
+{com}. save `startDates'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000005{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. // BART station descriptive variables
+. import excel "bartStationLines.xlsx", clear firstrow
+{res}{text}(9 vars, 114 obs)
+
+{com}. 
+. label variable station_id "Station ID"
+{txt}
+{com}. label variable line_color "The line the station is on"
+{txt}
+{com}. label variable line_order "Where in the line the station falls"
+{txt}
+{com}. label variable transfer_station "Transfer station"
+{txt}
+{com}. label variable downtown_core "Downtown San Francisco station"
+{txt}
+{com}. label variable parking "Parking next to the station"
+{txt}
+{com}. label variable metro_connection "Connected to Muni Metro"
+{txt}
+{com}. label variable other_train_connection "Connected to train station"
+{txt}
+{com}. label variable airport_connection "Connected to airport"
+{txt}
+{com}. 
+. // Sort and prepare for concatenation
+. sort station_id line_color
+{txt}
+{com}. bysort station_id: gen line_num = _n
+{txt}
+{com}. 
+. // Use tostring and replace for concatenation
+. tostring line_color line_order, replace
+{txt}line_color already string; no {res}replace
+{txt}line_order was {res:byte} now {res:str2}
+
+{com}. bysort station_id: gen all_lines = line_color if _n == 1
+{txt}(64 missing values generated)
+
+{com}. bysort station_id: replace all_lines = all_lines[_n-1] + "|" + line_color if _n > 1
+{txt}(64 real changes made)
+
+{com}. 
+. bysort station_id: gen all_line_orders = line_order if _n == 1  
+{txt}(64 missing values generated)
+
+{com}. bysort station_id: replace all_line_orders = all_line_orders[_n-1] + "|" + line_order if _n > 1
+{txt}(64 real changes made)
+
+{com}. 
+. // Keep only one observation per station with the concatenated values
+. bysort station_id: keep if _n == _N
+{txt}(64 observations deleted)
+
+{com}. 
+. // Verify we now have one row per station
+. duplicates report station_id
+
+{p 0 4}{txt}Duplicates in terms of {res} station_id{p_end}
+
+{txt}{hline 10}{c TT}{hline 27}
+   Copies {c |} Observations       Surplus
+{hline 10}{c +}{hline 27}
+        1 {c |}           {res}50             0
+{txt}{hline 10}{c BT}{hline 27}
+
+{com}. 
+. tempfile bartStationLines
+{txt}
+{com}. save `bartStationLines'
+{txt}{p 0 4 2}
+file {bf}
+/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000006{rm}
+saved
+as .dta format
+{p_end}
+
+{com}. 
+. 
+. // Append all files together
+. use `file2023', clear
+{txt}
+{com}. append using `file2024'
+{txt}
+{com}. append using `file2025'
+{txt}
+{com}. 
+. 
+. **# 3. Create Panel Dataset
+. ****************************
+. // Inspect the data
+. describe
+
+{txt}Contains data from {res}/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//S_05937.000001
+{txt} Observations:{res}    23,006,423                  
+{txt}    Variables:{res}             5                  14 Sep 2025 23:56
+{txt}{hline}
+Variable      Storage   Display    Value
+    name         type    format    label      Variable label
+{hline}
+{p 0 48}{res}{bind:v1             }{txt}{bind: str10   }{bind:%10s      }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{p 0 48}{bind:v2             }{txt}{bind: byte    }{bind:%8.0g     }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{p 0 48}{bind:v3             }{txt}{bind: str4    }{bind:%9s       }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{p 0 48}{bind:v4             }{txt}{bind: str4    }{bind:%9s       }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{p 0 48}{bind:v5             }{txt}{bind: int     }{bind:%8.0g     }{space 1}{bind:         }{bind:  }{res}{res}{p_end}
+{txt}{hline}
+Sorted by: 
+     Note: {res}Dataset has changed since last saved.
+{txt}
+{com}. summarize
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 10}v1 {c |}{res}          0
+{txt}{space 10}v2 {c |}{res} 23,006,423    13.70576    5.343343          0         23
+{txt}{space 10}v3 {c |}{res}          0
+{txt}{space 10}v4 {c |}{res}          0
+{txt}{space 10}v5 {c |}{res} 23,006,423    5.798801    11.51835          1       1030
+{txt}
+{com}. 
+. // rename variables and label data
+. label data "Appended BART Ridership Data 2023-2025"
+{txt}
+{com}. rename (v1 v2 v3 v4 v5) (date hour origin destination riders)
+{res}{txt}
+{com}. label variable date "Date"
+{txt}
+{com}. label variable hour "Hour from 0 to 23"
+{txt}
+{com}. label variable origin "Starting Station"
+{txt}
+{com}. label variable destination "Destination Station"
+{txt}
+{com}. label variable riders "Hourly Riders"
+{txt}
+{com}. 
+. // Generate origin destination pair (route)
+. egen route = group(origin destination)
+{txt}
+{com}. 
+. // Convert string date to Stata date format (adjust format if needed)
+. gen date_numeric = date(date, "YMD")
+{txt}
+{com}. format date_numeric %td
+{txt}
+{com}. drop date
+{txt}
+{com}. rename date_numeric date
+{res}{txt}
+{com}. label variable date "Date (Stata format)"
+{txt}
+{com}. 
+. // Create day of week variables
+. gen dow = dow(date)
+{txt}
+{com}. label variable dow "Day of Week (0=Sun, 6=Sat)"
+{txt}
+{com}. 
+. // Collapse to daily data
+. collapse (sum) riders, by(date origin destination route dow)
+{res}{txt}
+{com}. 
+. // Establish daily panel
+. sort route date
+{txt}
+{com}. xtset route date
+{res}
+{col 1}{txt:Panel variable: }{res:route}{txt: (unbalanced)}
+{p 1 16 2}{txt:Time variable: }{res:date}{txt:, }{res:{bind:01jan2023}}{txt: to }{res:{bind:02aug2025}}{txt:, but with gaps}{p_end}
+{txt}{col 10}Delta: {res}1 day
+{txt}
+{com}. tsfill, full
+{txt}
+{com}. 
+. // Populate the missing origin and destination values using the route ID
+. bysort route: replace origin = origin[_n-1] if missing(origin) & _n > 1
+{txt}(93,485 real changes made)
+
+{com}. bysort route: replace destination = destination[_n-1] if missing(destination) & _n > 1
+{txt}(93,485 real changes made)
+
+{com}. 
+. // Handle the first observation for each route if it was missing
+. bysort route: replace origin = origin[_N] if missing(origin)
+{txt}(462 real changes made)
+
+{com}. bysort route: replace destination = destination[_N] if missing(destination)
+{txt}(462 real changes made)
+
+{com}. 
+. // Now handle missing values for riders
+. replace riders = 0 if missing(riders)
+{txt}(93,947 real changes made)
+
+{com}. 
+. // Create log ridership
+. gen log_riders = log(riders)
+{txt}(93,947 missing values generated)
+
+{com}. 
+. // Label the variables
+. label variable riders "Daily ridership on route"
+{txt}
+{com}. label variable log_riders "Log ridership from origin to destination"
+{txt}
+{com}. label variable route "Origin destination pair"
+{txt}
+{com}. 
+. // Final panel check
+. xtset route date
+{res}
+{col 1}{txt:Panel variable: }{res:route}{txt: (strongly balanced)}
+{p 1 16 2}{txt:Time variable: }{res:date}{txt:, }{res:{bind:01jan2023}}{txt: to }{res:{bind:02aug2025}}{p_end}
+{txt}{col 10}Delta: {res}1 day
+{txt}
+{com}. xtdescribe
+
+   {txt}route:  {res}1{txt}, {res}2{txt}, ..., {res}2500                                   {txt}n ={res}       2500
+    {txt}date:  {res}01jan2023, 02jan2023, ..., 02aug2025              {txt}T ={res}        945
+           {txt}Delta(date) = {res}1 day
+           {txt}Span(date)  = {res}945 periods
+           {txt}(route*date uniquely identifies each observation)
+
+Distribution of T_i:   min      5%     25%       50%       75%     95%     max
+                    {res}   945     945     945       945       945     945     945
+
+{txt}{col 6}Freq.  Percent    Cum. {c |}  Pattern*
+ {hline 27}{c +}{c -}{c -}{hline 106}
+{res}     2500    100.00  100.00{txt} {c |}  {res}999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+{txt} {hline 27}{c +}{c -}{c -}{hline 106}
+{res}     2500    100.00        {txt} {c |}  {res}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+{txt} {hline 27}{c BT}{c -}{c -}{hline 106}
+ *Each column represents 9 periods.
+
+
+{com}. 
+. 
+. **# 4. Merge with Fare Gate Completion and Start Dates
+. ********************************************
+. // Prepare station names for merging
+. replace origin = upper(trim(origin))
+{txt}(0 real changes made)
+
+{com}. replace destination = upper(trim(destination))
+{txt}(0 real changes made)
+
+{com}. 
+. // Merge completion dates (origin)
+. merge m:1 origin using `completionDates', keep(master matched) generate(merge_origin)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_origin==3)
+{col 5}{hline 41}
+
+{com}. 
+. rename completion_date origin_completion_date
+{res}{txt}
+{com}. 
+. // Check merge results
+. drop if merge_origin == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_origin
+{txt}
+{com}. 
+. // Label the existing variable 
+. label variable origin_completion_date "Origin station fare gate completion date"
+{txt}
+{com}. 
+. // Merge completion dates (destination)
+. preserve
+{txt}
+{com}. use `completionDates', clear
+{txt}
+{com}. rename origin destination
+{res}{txt}
+{com}. save temp_dest_dates, replace
+{txt}{p 0 4 2}
+(file {bf}
+temp_dest_dates.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+temp_dest_dates.dta{rm}
+saved
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. merge m:1 destination using temp_dest_dates, keep(master matched) generate(merge_destination)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_destination==3)
+{col 5}{hline 41}
+
+{com}. rename completion_date destination_completion_date
+{res}{txt}
+{com}. 
+. // Check merge results
+. drop if merge_destination == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_destination
+{txt}
+{com}. 
+. // Clean up temporary file
+. erase temp_dest_dates.dta
+{txt}
+{com}. 
+. // Label the variable
+. label variable destination_completion_date "Destination station fare gate completion date"
+{txt}
+{com}. 
+. // Merge start dates (origin)
+. merge m:1 origin using `startDates', keep(master matched) generate(merge_origin)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_origin==3)
+{col 5}{hline 41}
+
+{com}. 
+. rename start_date origin_start_date
+{res}{txt}
+{com}. 
+. // Check merge results
+. drop if merge_origin == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_origin
+{txt}
+{com}. 
+. // Label the existing variable 
+. label variable origin_start_date "Origin station fare gate start date"
+{txt}
+{com}. 
+. // Merge start dates (destination)
+. preserve
+{txt}
+{com}. use `startDates', clear
+{txt}
+{com}. rename origin destination
+{res}{txt}
+{com}. save temp_dest_dates, replace
+{txt}{p 0 4 2}
+(file {bf}
+temp_dest_dates.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+temp_dest_dates.dta{rm}
+saved
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. merge m:1 destination using temp_dest_dates, keep(master matched) generate(merge_destination)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_destination==3)
+{col 5}{hline 41}
+
+{com}. rename start_date destination_start_date
+{res}{txt}
+{com}. 
+. // Check merge results
+. drop if merge_destination == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_destination
+{txt}
+{com}. 
+. // Clean up temporary file
+. erase temp_dest_dates.dta
+{txt}
+{com}. 
+. // Label the variable
+. label variable destination_start_date "Destination station fare gate start date"
+{txt}
+{com}. 
+. // Merge origin station characteristics
+. preserve
+{txt}
+{com}. use `bartStationLines', clear
+{txt}
+{com}. rename station_id origin
+{res}{txt}
+{com}. rename all_lines origin_lines
+{res}{txt}
+{com}. rename all_line_orders origin_lines_order
+{res}{txt}
+{com}. rename transfer_station origin_transfer
+{res}{txt}
+{com}. rename downtown_core origin_downtown
+{res}{txt}
+{com}. rename parking origin_parking
+{res}{txt}
+{com}. rename metro_connection origin_metro
+{res}{txt}
+{com}. rename other_train_connection origin_other_train
+{res}{txt}
+{com}. rename airport_connection origin_airport
+{res}{txt}
+{com}. save temp_bart_lines, replace
+{txt}{p 0 4 2}
+(file {bf}
+temp_bart_lines.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+temp_bart_lines.dta{rm}
+saved
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. merge m:1 origin using temp_bart_lines, keep(master matched) generate(merge_origin)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_origin==3)
+{col 5}{hline 41}
+
+{com}. 
+. // Check merge results
+. drop if merge_origin == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_origin
+{txt}
+{com}. 
+. // Clean up temporary file
+. erase temp_bart_lines.dta
+{txt}
+{com}. 
+. // Merge destination station characteristics
+. preserve
+{txt}
+{com}. use `bartStationLines', clear
+{txt}
+{com}. rename station_id destination
+{res}{txt}
+{com}. rename all_lines destination_lines
+{res}{txt}
+{com}. rename all_line_orders destination_lines_order
+{res}{txt}
+{com}. rename transfer_station destination_transfer
+{res}{txt}
+{com}. rename downtown_core destination_downtown
+{res}{txt}
+{com}. rename parking destination_parking
+{res}{txt}
+{com}. rename metro_connection destination_metro
+{res}{txt}
+{com}. rename other_train_connection destination_other_train
+{res}{txt}
+{com}. rename airport_connection destination_airport
+{res}{txt}
+{com}. save temp_bart_lines, replace
+{txt}{p 0 4 2}
+(file {bf}
+temp_bart_lines.dta{rm}
+not found)
+{p_end}
+{p 0 4 2}
+file {bf}
+temp_bart_lines.dta{rm}
+saved
+{p_end}
+
+{com}. restore
+{txt}
+{com}. 
+. merge m:1 destination using temp_bart_lines, keep(master matched) generate(merge_destination)
+{res}
+{txt}{col 5}Result{col 33}Number of obs
+{col 5}{hline 41}
+{col 5}Not matched{col 30}{res}               0
+{txt}{col 5}Matched{col 30}{res}       2,362,500{txt}  (merge_destination==3)
+{col 5}{hline 41}
+
+{com}. 
+. // Check merge results
+. drop if merge_destination == 2
+{txt}(0 observations deleted)
+
+{com}. drop merge_destination
+{txt}
+{com}. 
+. // Clean up temporary file
+. erase temp_bart_lines.dta
+{txt}
+{com}. 
+. 
+. **# 5. Create Needed Variables
+. *******************************
+. // Create Treatment Variables
+. gen treated_origin = ///
+>         ((date >= origin_completion_date) & !missing(origin_completion_date))
+{txt}
+{com}.         
+. label variable treated_origin "Origin post fare gate installment"
+{txt}
+{com}. 
+. gen treated_destination = ///
+>         ((date >= destination_completion_date) & !missing(destination_completion_date))
+{txt}
+{com}.         
+. label variable treated_destination "Destination post fare gate installment"
+{txt}
+{com}. 
+. gen treated_either = ///
+>         ((date >= origin_completion_date) & !missing(origin_completion_date)) | ///
+>         ((date >= destination_completion_date) & !missing(destination_completion_date))
+{txt}
+{com}.         
+. label variable treated_either "Either origin or destination post fare gate installment"
+{txt}
+{com}. 
+. gen treated_both = ///
+>         ((date >= origin_completion_date) & !missing(origin_completion_date)) & ///
+>         ((date >= destination_completion_date) & !missing(destination_completion_date))
+{txt}
+{com}.         
+. label variable treated_both "Both origin or destination post fare gate installment"
+{txt}
+{com}. 
+. // Create Under Construction Variable
+. gen under_construction = ///
+>     ((date < origin_completion_date) & (date >= origin_start_date) & !missing(origin_start_date)) | ///
+>     ((date < destination_completion_date) & (date >= destination_start_date) & !missing(destination_start_date))
+{txt}
+{com}. 
+. label variable under_construction "Either origin or destination fare gate under construction"
+{txt}
+{com}. 
+. // Create time-to-treatment variable
+. gen earliest_completion_route = min(origin_completion_date, destination_completion_date)
+{txt}
+{com}. gen time_to_treatment_route = date - earliest_completion_route
+{txt}
+{com}. label variable earliest_completion_route "Date of earliest fare gate completion on the route"
+{txt}
+{com}. label variable time_to_treatment_route "Days relative to fare gate completion "
+{txt}
+{com}. 
+. // First, create a function to calculate stops between two stations on the same line
+. capture program drop calculate_stops
+{txt}
+{com}. program define calculate_stops
+{txt}  1{com}.     args origin_line_order destination_line_order line_color_pattern
+{txt}  2{com}.     
+.     // If stations share a common line, calculate stops
+.     if "`line_color_pattern'" != "" {c -(}
+{txt}  3{com}.         local stops = abs(real(word("`origin_line_order'", 1)) - real(word("`destination_line_order'", 1)))
+{txt}  4{com}.     {c )-}
+{txt}  5{com}.     else {c -(}
+{txt}  6{com}.         local stops = 999 // No common line, transfer needed
+{txt}  7{com}.     {c )-}
+{txt}  8{com}.     
+.     return local stops = `stops'
+{txt}  9{com}. end
+{txt}
+{com}. 
+. // Initialize the stops variable
+. gen stops_between = 999
+{txt}
+{com}. label variable stops_between "Number of stops between stations (999 = transfer needed)"
+{txt}
+{com}. 
+. // For each observation, check if origin and destination share any common line
+. forvalues i = 1/6 {c -(}  // Assuming max 6 lines per station
+{txt}  2{com}.     // Extract the i-th line and order for origin
+.     gen origin_line_`i' = word(origin_lines, `i') if word(origin_lines, `i') != ""
+{txt}  3{com}.     gen origin_order_`i' = real(word(origin_lines_order, `i')) if word(origin_lines_order, `i') != ""
+{txt}  4{com}.     
+.     // Extract the i-th line and order for destination  
+.     gen destination_line_`i' = word(destination_lines, `i') if word(destination_lines, `i') != ""
+{txt}  5{com}.     gen destination_order_`i' = real(word(destination_lines_order, `i')) if word(destination_lines_order, `i') != ""
+{txt}  6{com}.     
+.     // Check for matching lines and calculate stops
+.     forvalues j = 1/6 {c -(}
+{txt}  7{com}.         replace stops_between = abs(origin_order_`i' - destination_order_`j') ///
+>             if origin_line_`i' == destination_line_`j' & ///
+>                origin_line_`i' != "" & destination_line_`j' != "" & ///
+>                stops_between > abs(origin_order_`i' - destination_order_`j')
+{txt}  8{com}.     {c )-}
+{txt}  9{com}. {c )-}
+{txt}(1,701,000 missing values generated)
+(1,701,000 missing values generated)
+(103,950 real changes made)
+{err}destination_order_2 not found
+{txt}{search r(111), local:r(111);}
+
+end of do-file
+
+{search r(111), local:r(111);}
+
+{com}. do "/var/folders/6z/0pv81j2524v8c80qsmnrbmcm0000gn/T//SD05937.000000"
+{txt}
+{com}. *********************************************
+. * Project: Causal Effect of Next Generation Fare Gates
+. * Author:  Austin Coffelt
+. * Date:    9/1/2025
+. * Desc:    This do-file cleans and prepares the hourly ridership data for descriptive statistics and regression in future files.
+. *********************************************
+. 
+. **# 1. Set Up Environment
+. **************************
+. clear all       // Clears memory
+{res}{txt}
+{com}. set more off    // Prevents the -more- prompt
+{txt}
+{com}. capture log close   // Capturally closes any open logs
+{smcl}
+{com}{sf}{ul off}

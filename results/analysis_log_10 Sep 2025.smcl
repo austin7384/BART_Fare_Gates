@@ -1,0 +1,165 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}/Users/austincoffelt/Documents/bart_fare_gates_project/results/analysis_log_10 Sep 2025.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}10 Sep 2025, 12:27:54
+{txt}
+{com}. 
+. 
+. **# 2. Load Data
+. ******************
+. use "$data/bart_ridership_2023_2025_with_treatment.dta"
+{txt}(Appended BART Ridership Data 2023-2025)
+
+{com}. 
+. list in 1/1
+
+     {txt}{c TLC}{hline 9}{c TT}{hline 11}{c TT}{hline 9}{c TT}{hline 12}{c TT}{hline 6}{c TT}{hline 12}{c TT}{hline 12}{c TT}{hline 12}{c TT}{hline 12}{c TRC}
+  1. {c |} origin  {c |} desti~on  {c |} riders  {c |}      date  {c |} dow  {c |} or~n_date  {c |} de~n_date  {c |} or~t_date  {c |} de~t_date  {c |}
+     {c |} {res}  POWL  {txt}{c |} {res}    12TH  {txt}{c |} {res}   394  {txt}{c |} {res}21nov2024  {txt}{c |} {res}  4  {txt}{c |} {res}23nov2024  {txt}{c |} {res}04feb2025  {txt}{c |} {res}01nov2024  {txt}{c |} {res}01dec2024  {txt}{c |}
+     {c LT}{hline 9}{c BT}{c TT}{hline 10}{c +}{hline 9}{c BT}{c TT}{hline 10}{c TT}{c BT}{hline 6}{c BT}{hline 3}{c TT}{hline 8}{c BT}{hline 2}{c TT}{hline 9}{c BT}{hline 1}{c TT}{hline 10}{c BT}{c TT}{hline 11}{c RT}
+     {c |} line_c~r {c |} line_o~r {c |} orig~fer {c |} origi~wn {c |} origin~g  {c |} origin~o  {c |} origi~in  {c |} origin~t  {c |} line_num  {c |}
+     {c |} {res}  YELLOW {txt}{c |} {res}      17 {txt}{c |} {res}       0 {txt}{c |} {res}       1 {txt}{c |} {res}       0  {txt}{c |} {res}       1  {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       4  {txt}{c |}
+     {c LT}{hline 10}{c BT}{hline 10}{c BT}{hline 1}{c TT}{hline 8}{c BT}{hline 4}{c TT}{hline 5}{c BT}{hline 4}{c TT}{hline 6}{c BT}{hline 3}{c TT}{hline 7}{c BT}{hline 2}{c TT}{hline 8}{c BT}{hline 1}{c TT}{hline 9}{c BT}{c TT}{hline 10}{c RT}
+     {c |}          origin_lines {c |} origin_li~r {c |} dest~fer {c |} desti~wn {c |} destin~g {c |} destin~o {c |} desti~in {c |} destin~t {c |}
+     {c |} {res}BLUE|GREEN|RED|YELLOW {txt}{c |} {res}12|16|13|17 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |}
+     {c LT}{hline 20}{c TT}{hline 2}{c BT}{hline 8}{c TT}{hline 4}{c BT}{hline 5}{c TT}{hline 4}{c BT}{hline 6}{c TT}{hline 3}{c BT}{hline 7}{c TT}{hline 2}{c BT}{hline 8}{c TT}{hline 1}{c BT}{hline 9}{c TT}{c BT}{hline 10}{c RT}
+     {c |} destination_lines  {c |} dest~der  {c |} treated  {c |} under_~n  {c |} post~2TH  {c |} post~6TH  {c |} post~9TH  {c |} post_2~H  {c |}
+     {c |} {res}ORANGE|RED|YELLOW  {txt}{c |} {res} 13|9|13  {txt}{c |} {res}      0  {txt}{c |} {res}       1  {txt}{c |} {res}       0  {txt}{c |} {res}       1  {txt}{c |} {res}       0  {txt}{c |} {res}       1  {txt}{c |}
+     {c LT}{hline 10}{c TT}{hline 9}{c BT}{c TT}{hline 10}{c +}{hline 10}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c RT}
+     {c |} post_A~C {c |} post_A~B {c |} post_B~B {c |} post_B~F {c |} post_B~Y  {c |} post_C~T  {c |} post_~VC  {c |} post_C~M  {c |} post_C~S  {c |}
+     {c |} {res}       1 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       1  {txt}{c |} {res}       0  {txt}{c |} {res}       1  {txt}{c |}
+     {c LT}{hline 10}{c +}{hline 10}{c +}{hline 10}{c +}{hline 10}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c RT}
+     {c |} post_~NC {c |} post_D~Y {c |} post_D~K {c |} post_D~N {c |} post_D~L  {c |} post_E~R  {c |} post_F~T  {c |} post_F~L  {c |} post_G~N  {c |}
+     {c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       1  {txt}{c |} {res}       0  {txt}{c |}
+     {c LT}{hline 10}{c +}{hline 10}{c +}{hline 10}{c +}{hline 10}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c RT}
+     {c |} post_H~W {c |} post_L~Y {c |} post_L~E {c |} post_~AR {c |} post~LBR  {c |} post_~PT  {c |} post_~NT  {c |} post_N~K  {c |} post_N~N  {c |}
+     {c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |}
+     {c LT}{hline 10}{c +}{hline 10}{c +}{hline 10}{c +}{hline 10}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c RT}
+     {c |} post_O~L {c |} post_O~N {c |} post_P~R {c |} post_~IL {c |} post_P~T  {c |} post_P~A  {c |} post_~WL  {c |} post_R~H  {c |} post_R~K  {c |}
+     {c |} {res}       1 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       1  {txt}{c |} {res}       0  {txt}{c |}
+     {c LT}{hline 10}{c +}{hline 10}{c +}{hline 10}{c +}{hline 10}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c +}{hline 11}{c RT}
+     {c |} post_S~L {c |} post_~RN {c |} post_S~A {c |} post_S~Y {c |} post_~AN  {c |} post_U~Y  {c |} post_W~M  {c |} post~CRK  {c |} post_W~B  {c |}
+     {c |} {res}       0 {txt}{c |} {res}       0 {txt}{c |} {res}       1 {txt}{c |} {res}       0 {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |} {res}       0  {txt}{c |}
+     {c LT}{hline 10}{c BT}{hline 10}{c BT}{hline 10}{c BT}{c TT}{hline 9}{c BT}{hline 11}{c BT}{hline 11}{c BT}{c TT}{hline 10}{c BT}{hline 11}{c BT}{hline 11}{c RT}
+     {c |}            post_~AK             {c |}             time_t~t             {c |}             transf~y             {c |}
+     {c |}            {res}       1             {txt}{c |}             {res}      -2             {txt}{c |}             {res}       0             {txt}{c |}
+     {c BLC}{hline 33}{c BT}{hline 34}{c BT}{hline 34}{c BRC}
+
+{com}. 
+. **# 3. Simple Diff in Diff Estimation
+. **************************************
+. 
+. * Create station pair
+. egen station_pair = group(origin destination)
+{txt}
+{com}. 
+. // Find earliest completion date
+. gen pair_completion_date = min(origin_completion_date, destination_completion_date)
+{txt}
+{com}. 
+. * Count initial station pairs using egen method
+. egen temp = group(station_pair)
+{res}{txt}
+{com}. summarize temp
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 8}temp {c |}{res}  2,268,553    1240.615    722.6719          1       2500
+{txt}
+{com}. di "Initial station pairs: " r(max)
+{res}Initial station pairs: 2500
+{txt}
+{com}. drop temp
+{txt}
+{com}. 
+. * Count observations per station pair
+. bysort station_pair: gen pair_obs = _N
+{txt}
+{com}. 
+. * Keep only pairs with complete data (all 945 days)
+. keep if pair_obs == 945
+{txt}(1,530,508 observations deleted)
+
+{com}. 
+. * Count remaining station pairs
+. egen temp2 = group(station_pair)
+{res}{txt}
+{com}. summarize temp2
+
+{txt}    Variable {c |}        Obs        Mean    Std. dev.       Min        Max
+{hline 13}{c +}{hline 57}
+{space 7}temp2 {c |}{res}    738,045         391    225.4552          1        781
+{txt}
+{com}. di "Station pairs with complete data: " r(max)
+{res}Station pairs with complete data: 781
+{txt}
+{com}. drop temp2
+{txt}
+{com}. 
+. * Verify total observations
+. count
+  {res}738,045
+{txt}
+{com}. di "Total observations: " r(N)
+{res}Total observations: 738045
+{txt}
+{com}. di "Expected observations: " r(max) * 945
+{res}Expected observations: .
+{txt}
+{com}. 
+. * Set panel data and check
+. xtset station_pair date
+{res}
+{col 1}{txt:Panel variable: }{res:station_pair}{txt: (strongly balanced)}
+{p 1 16 2}{txt:Time variable: }{res:date}{txt:, }{res:{bind:01jan2023}}{txt: to }{res:{bind:02aug2025}}{p_end}
+{txt}{col 10}Delta: {res}1 day
+{txt}
+{com}. xtdescribe
+
+{txt}station_pair:  {res}1{txt}, {res}2{txt}, ..., {res}2500                               {txt}n ={res}        781
+    {txt}date:  {res}01jan2023, 02jan2023, ..., 02aug2025              {txt}T ={res}        945
+           {txt}Delta(date) = {res}1 day
+           {txt}Span(date)  = {res}945 periods
+           {txt}(station_pair*date uniquely identifies each observation)
+
+Distribution of T_i:   min      5%     25%       50%       75%     95%     max
+                    {res}   945     945     945       945       945     945     945
+
+{txt}{col 6}Freq.  Percent    Cum. {c |}  Pattern*
+ {hline 27}{c +}{c -}{c -}{hline 106}
+{res}      781    100.00  100.00{txt} {c |}  {res}999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
+{txt} {hline 27}{c +}{c -}{c -}{hline 106}
+{res}      781    100.00        {txt} {c |}  {res}XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+{txt} {hline 27}{c BT}{c -}{c -}{hline 106}
+ *Each column represents 9 periods.
+
+
+{com}. 
+. // keep if date >= mdy(12, 1, 2023) & date <= mdy(8, 28, 2024)
+. 
+. //replace pair_completion_date = . if pair_completion_date >= mdy(8, 29, 2024)
+. 
+. // CSDID estimation
+. //csdid riders, ivar(station_pair) time(date) gvar(pair_completion_date) notyet
+. //estimates store csdid_results
+. 
+. // Plot group-time average treatment effects
+. //csdid_plot, name(csdid_plot, replace)
+. 
+. // Aggregate effects
+. //csdid_plot, aggregate(all) name(csdid_agg, replace)
+. 
+. bacondecomp riders treated
+{txt}Computing decomposition across 36 timing groups
+including a never-treated group
+{err}{hline 2}Break{hline 2}
+{txt}{search r(1), local:r(1);}
+
+end of do-file
+
+{err}{hline 2}Break{hline 2}
+{txt}{search r(1), local:r(1);}
+
+{com}. 
