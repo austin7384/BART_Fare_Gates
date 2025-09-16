@@ -21,6 +21,20 @@ Did the recent installation of new fare gates at BART stations cause a significa
 
 ## 📁 Repository Structure
 
+├── data/
+│ ├── raw/ # Original, immutable data
+│ │ ├── ridership_data/ # Not on repository due to size
+│ │ ├── bartStationLines.xlsx # Station Characteristics
+│ │ └── bartCompletionDates.xlsx # Treatment
+│ └── processed/ # Cleaned, analysis-ready data
+│ └── bart_ridership_2023_2025_with_treatment.dta # Not on repository due to size
+├── notebooks/
+│ ├── 01_bart_data_cleaning.do # Scripts for processing raw data
+│ ├── 02_bart_descriptive_stats.do # EDA and summary statistics
+│ └── 03_Regression_Analysis.ipynb # Analysis still in progress
+├── results/ # both tables and figures
+└── README.md # This file
+
 ## 🗃️ Data Sources
 
 *   **Ridership Data:** Public CSV Data from BART's Website. Covers the period 1/1/2023 to 8/2/2025. (Not in this repository due to size)
@@ -79,10 +93,6 @@ Where:
     cd your-repo-name
     ```
 2.  (Recommended) Create a virtual environment.
-3.  Install the required packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
 
 ### Running the Code
 
