@@ -21,7 +21,7 @@ Did the recent installation of new fare gates at BART stations cause a significa
 
 ## 📁 Repository Structure
 
-├── data/
+```├── data/
 │ ├── raw/ # Original, immutable data
 │ │ ├── ridership_data/ # Not on repository due to size
 │ │ ├── bartStationLines.xlsx # Station Characteristics
@@ -34,6 +34,7 @@ Did the recent installation of new fare gates at BART stations cause a significa
 │ └── 03_Regression_Analysis.ipynb # Analysis still in progress
 ├── results/ # both tables and figures
 └── README.md # This file
+```
 
 ## 🗃️ Data Sources
 
